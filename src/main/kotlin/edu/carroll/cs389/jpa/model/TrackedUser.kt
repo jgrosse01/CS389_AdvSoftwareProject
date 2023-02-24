@@ -10,8 +10,6 @@ import java.util.*
 open class TrackedUser() {
     companion object {
         val serialVersionUID: Long = 1L
-        val EOL: String = System.lineSeparator()
-        val TAB: String = "\t"
     }
 
     constructor(ipv4: String) : this() {
