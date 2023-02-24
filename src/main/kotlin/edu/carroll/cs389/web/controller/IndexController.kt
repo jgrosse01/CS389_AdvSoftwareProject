@@ -13,7 +13,7 @@ class IndexController {
 
     @GetMapping("/")
     fun index(): String {
-        log.info("index(): User landed at index page (\"/\")")
+        log.info("index(): User landed at index page ('/')")
         return "index"
     }
 }
