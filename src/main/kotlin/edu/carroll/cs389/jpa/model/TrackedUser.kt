@@ -1,7 +1,6 @@
 package edu.carroll.cs389.jpa.model
 
 import jakarta.persistence.*
-import java.sql.Date
 import java.sql.Timestamp
 import java.util.*
 
@@ -19,10 +18,6 @@ open class TrackedUser() {
         this.pageVisited = url
 
         this.timestamp = Timestamp(Date().time)
-        val cal: Calendar = Calendar.getInstance()
-        cal.time = Date()
-        cal.timeInMillis = cal.timeInMillis + store_duration
-        this.dateExpires = Date(cal.time.time)
     }
 
     constructor(ipv4: String, os: String, browser: String, url: String) : this() {
@@ -32,10 +27,6 @@ open class TrackedUser() {
         this.pageVisited = url
 
         this.timestamp = Timestamp(Date().time)
-        val cal: Calendar = Calendar.getInstance()
-        cal.time = Date()
-        cal.timeInMillis = cal.timeInMillis + store_duration
-        this.dateExpires = cal.timeInMillis as java.sql.Date
     }
 
     @Id
@@ -51,9 +42,6 @@ open class TrackedUser() {
     @Column(name = "browser")
     private lateinit var browser: String
 
-    @Column(name = "date_expires", nullable = false)
-    private lateinit var dateExpires: Date
-
     @Column(name = "timestamp", nullable = false)
     private lateinit var timestamp: Timestamp
 
@@ -64,7 +52,6 @@ open class TrackedUser() {
     fun ipv4(): String {return this.ipv4}
     fun os(): String {return this.os}
     fun browser(): String {return this.browser}
-    fun dateExpires(): Date {return this.dateExpires}
     fun timestamp(): Timestamp {return this.timestamp}
     fun pageVisited(): String {return this.pageVisited}
 
