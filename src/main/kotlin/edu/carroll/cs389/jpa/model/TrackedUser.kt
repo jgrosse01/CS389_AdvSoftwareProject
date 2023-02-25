@@ -9,11 +9,33 @@ import java.util.*
 @Table(name="TrackedUsers")
 open class TrackedUser() {
     companion object {
-        val serialVersionUID: Long = 1L
+        private const val serialVersionUID: Long = 1L
+        // this is 30 days in milliseconds
+        private const val store_duration: Long = 2592000000
     }
 
-    constructor(ipv4: String) : this() {
+    constructor(ipv4: String, url: String) : this() {
         this.ipv4 = ipv4
+        this.pageVisited = url
+
+        this.timestamp = Timestamp(Date().time)
+        val cal: Calendar = Calendar.getInstance()
+        cal.time = Date()
+        cal.timeInMillis = cal.timeInMillis + store_duration
+        this.dateExpires = Date(cal.time.time)
+    }
+
+    constructor(ipv4: String, os: String, browser: String, url: String) : this() {
+        this.ipv4 = ipv4
+        this.os = os
+        this.browser = browser
+        this.pageVisited = url
+
+        this.timestamp = Timestamp(Date().time)
+        val cal: Calendar = Calendar.getInstance()
+        cal.time = Date()
+        cal.timeInMillis = cal.timeInMillis + store_duration
+        this.dateExpires = cal.timeInMillis as java.sql.Date
     }
 
     @Id
