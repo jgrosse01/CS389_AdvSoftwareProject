@@ -2,7 +2,8 @@ package edu.carroll.cs389.jpa.model
 
 import jakarta.persistence.*
 import java.sql.Timestamp
-import java.util.*
+import java.util.Date
+import java.util.Objects
 
 @Entity
 @Table(name="TrackedUsers")
