@@ -1,4 +1,4 @@
-package edu.carroll.cs389.service
+package edu.carroll.cs389.service.tracker
 
 import com.blueconic.browscap.BrowsCapField
 import com.blueconic.browscap.Capabilities
@@ -27,7 +27,7 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         )
     )
 
-    override fun trackClient(req: HttpServletRequest, url: String) {
+    override fun trackClient(req: HttpServletRequest) {
         log.debug("trackClient: Attempting to track connecting client")
         val clientInfo: Capabilities = parser.parse(req.getHeader("User-Agent"))
         val ipv4: String = if (req.remoteAddr == "0:0:0:0:0:0:0:1") {
@@ -60,7 +60,7 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         }
 
         // save trackedUser to DB with potentially null val for OS/Browser
-        val user: TrackedUser = TrackedUser(req.remoteAddr, os, browser, url)
+        val user: TrackedUser = TrackedUser(req.remoteAddr, os, browser, req.requestURI.toString())
         log.debug("trackClient: Successfully created TrackedUser entity for client ${req.remoteAddr}")
         try {
             trackerRepo.save(user)
