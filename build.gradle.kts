@@ -26,6 +26,7 @@ dependencies {
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("jakarta.persistence:jakarta.persistence-api")
 	implementation("com.blueconic:browscap-java:1.4.0")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
