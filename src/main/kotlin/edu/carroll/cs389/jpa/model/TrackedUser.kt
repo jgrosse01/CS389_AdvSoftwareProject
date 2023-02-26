@@ -13,13 +13,6 @@ open class TrackedUser() {
         private val VALID_BROWSER: List<String> = listOf<String>()
     }
 
-    constructor(ipv4: String, url: String) : this() {
-        this.ipv4 = ipv4
-        this.pageVisited = url
-
-        this.timestamp = Timestamp(Date().time)
-    }
-
     constructor(ipv4: String, os: String?, browser: String?, url: String) : this() {
         this.ipv4 = ipv4
         if (os != null) {
