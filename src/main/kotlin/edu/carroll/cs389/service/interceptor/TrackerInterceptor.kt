@@ -1,7 +1,6 @@
 package edu.carroll.cs389.service.interceptor
 
 import edu.carroll.cs389.configuration.TrackerInterceptorProperties
-import edu.carroll.cs389.jpa.repo.TrackerRepo
 import edu.carroll.cs389.service.tracker.TrackService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
-class TrackerInterceptor(private val trackerRepo: TrackerRepo, @Qualifier("trackServiceRaw") private val trackerService: TrackService, private val trackerInterceptorProperties: TrackerInterceptorProperties) : HandlerInterceptor {
+class TrackerInterceptor(@Qualifier("trackServiceRaw") private val trackerService: TrackService, private val trackerInterceptorProperties: TrackerInterceptorProperties) : HandlerInterceptor {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(TrackerInterceptor::class.java)
     }
@@ -24,7 +23,7 @@ class TrackerInterceptor(private val trackerRepo: TrackerRepo, @Qualifier("track
         } else if (request.requestURI.toString() == "/error" && this.trackerInterceptorProperties.ignoreErrorPageWhenTracking) {
             log.debug("preHandle: Ignoring tracking request to error page")
         } else {
-            log.debug("preHandle: Tracking request for ${request.requestURI.toString()} being processed")
+            log.debug("preHandle: Tracking request for ${request.requestURI} being processed")
             trackerService.trackClient(request)
         }
         log.debug("preHandle: PreHandle tracking concluded")
