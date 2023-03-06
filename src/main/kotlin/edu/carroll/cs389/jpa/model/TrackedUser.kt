@@ -4,8 +4,11 @@ import jakarta.persistence.*
 import java.sql.Timestamp
 import java.util.*
 
+/**
+ * Injectable runtime object which specifies the format of data to store in our connected tracker database.
+ */
 @Entity
-@Table(name="TrackedUsers")
+@Table(name = "TrackedUsers")
 open class TrackedUser() {
     companion object {
         private const val serialVersionUID: Long = 1L
@@ -13,17 +16,27 @@ open class TrackedUser() {
         private val VALID_BROWSER: List<String> = listOf<String>()
     }
 
+    /**
+     * Convenience constructor for TrackedUser
+     *
+     * @param ipv4: String format of the client's ipv4 address
+     * @param os: String format of the client's operating system information (including major version)
+     * @param browser: String format of the client's browser information (including major version)
+     * @param url: String format of the url within this webapp's domain (ex: "/index" not "https://...")
+     *
+     * @return A fully initialized instance of a TrackedUser object
+     */
     constructor(ipv4: String, os: String?, browser: String?, url: String) : this() {
-        this.ipv4 = ipv4
+        this.clientIpv4Address = ipv4
         if (os != null) {
-            this.os = os
+            this.clientOperatingSystem = os
         }
         if (browser != null) {
-            this.browser = browser
+            this.clientBrowserInfo = browser
         }
-        this.pageVisited = url
+        this.clientConnectionRequestedPage = url
 
-        this.timestamp = Timestamp(Date().time)
+        this.clientConnectionAttemptTimestamp = Timestamp(Date().time)
     }
 
     @Id
@@ -31,28 +44,27 @@ open class TrackedUser() {
     private var id: Int? = null
 
     @Column(name = "ipv4_address", nullable = false)
-    private lateinit var ipv4: String
+    private lateinit var clientIpv4Address: String
 
     @Column(name = "operating_system")
-    private lateinit var os: String
+    private lateinit var clientOperatingSystem: String
 
     @Column(name = "browser")
-    private lateinit var browser: String
+    private lateinit var clientBrowserInfo: String
 
     @Column(name = "timestamp", nullable = false)
-    private lateinit var timestamp: Timestamp
+    private lateinit var clientConnectionAttemptTimestamp: Timestamp
 
     @Column(name = "url_visited", nullable = false)
-    private lateinit var pageVisited: String
+    private lateinit var clientConnectionRequestedPage: String
 
-    fun id(): Int? {return this.id}
-    fun ipv4(): String {return this.ipv4}
-    fun os(): String {return this.os}
-    fun browser(): String {return this.browser}
-    fun timestamp(): Timestamp {return this.timestamp}
-    fun pageVisited(): String {return this.pageVisited}
-
-
+    /**
+     * Override of the java object equals function for a TrackedUser
+     *
+     * @param other: Any object we wish to compare to the calling instance of TrackedUser
+     *
+     * @return Boolean whether this and other are considered equal
+     */
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -61,16 +73,26 @@ open class TrackedUser() {
             return false
         }
         val trackedUser = other as TrackedUser
-        return ipv4 == trackedUser.ipv4 &&
-                timestamp == trackedUser.timestamp &&
-                pageVisited == trackedUser.pageVisited
+        return clientIpv4Address == trackedUser.clientIpv4Address &&
+                clientConnectionAttemptTimestamp == trackedUser.clientConnectionAttemptTimestamp &&
+                clientConnectionRequestedPage == trackedUser.clientConnectionRequestedPage
     }
 
+    /**
+     * Override of java object hashcode function for a TrackedUser
+     *
+     * @return Int unique hash for this instance of TrackedUser
+     */
     override fun hashCode(): Int {
-        return Objects.hash(ipv4, timestamp, pageVisited)
+        return Objects.hash(clientIpv4Address, clientConnectionAttemptTimestamp, clientConnectionRequestedPage)
     }
 
+    /**
+     * Override of java object toString function for a TrackedUser
+     *
+     * @return String statement of client information in an easily human-readable format
+     */
     override fun toString(): String {
-        return "Client $ipv4 accessed page $pageVisited from $browser running on $os at $timestamp."
+        return "Client $clientIpv4Address accessed page $clientConnectionRequestedPage from $clientBrowserInfo running on $clientOperatingSystem at $clientConnectionAttemptTimestamp."
     }
 }
