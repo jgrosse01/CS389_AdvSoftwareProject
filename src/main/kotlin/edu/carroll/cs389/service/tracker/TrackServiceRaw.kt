@@ -38,10 +38,10 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
 
         // null-check and format browser string (java library has potential to return null)
         var browser: String? = null
-        if (clientInfo.browser != null && clientInfo.browserMajorVersion != null) {
+        if (clientInfo.browser != null && (clientInfo.browserMajorVersion != null && clientInfo.browserMajorVersion != "Unknown")) {
             log.debug("trackClient: $ipv4 successfully acquired browser info")
             browser = "${clientInfo.browser} ${clientInfo.browserMajorVersion}"
-        } else if (clientInfo.browser != null && clientInfo.browserMajorVersion == null) {
+        } else if (clientInfo.browser != null && (clientInfo.browserMajorVersion == null || clientInfo.browserMajorVersion == "Unknown")) {
             log.warn("trackClient: $ipv4 client browser missing version tag")
             browser = clientInfo.browser
         } else {
@@ -49,10 +49,10 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         }
 
         var os: String? = null
-        if (clientInfo.platform != null && clientInfo.platformVersion != null) {
+        if (clientInfo.platform != null && (clientInfo.platformVersion != null && clientInfo.platformVersion != "Unknown")) {
             log.debug("trackClient: $ipv4 successfully acquired OS info")
             os = "${clientInfo.platform} ${clientInfo.platformVersion}"
-        } else if (clientInfo.platform != null && clientInfo.platformVersion == null) {
+        } else if (clientInfo.platform != null && (clientInfo.platformVersion == null || clientInfo.platformVersion == "Unknown")) {
             log.warn("trackClient: $ipv4 client OS missing version tag")
             os = clientInfo.platform
         } else {
