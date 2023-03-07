@@ -1,0 +1,28 @@
+/* File for CSS which overrides bootstrap's CSS*/
+
+a.nav-link {
+    color: #eee;
+}
+
+.bg-purple {
+    background-color: #492539 !important;
+}
+
+.anchor {
+    padding-top: 5.625em;
+}
+
+.bso-content {
+    background-color: #ccc;
+    min-height: 100vh !important;
+    border-left: solid #492539 0.2em;
+    border-right: solid #492539 0.2em;
+}
+
+.nav-brand {
+    font-size: 1.2em;
+}
+
+body {
+    background-color: #444;
+}
