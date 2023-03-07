@@ -11,13 +11,22 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
+/**
+ * Implementation of TrackService which takes raw (not passed through a load balancer or proxy)
+ * Uses browscap library to process user-agent information from servlet requests
+ * @see TrackService
+ * @see com.blueconic.browscap
+ *
+ * @param trackerRepo: JPA repository that allows search by client ipv4 address
+ * @see edu.carroll.cs389.jpa.repo.TrackerRepo
+ */
 @Service
 class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(TrackServiceRaw::class.java)
     }
 
-    private val parser: UserAgentParser = UserAgentService().loadParser(
+    private val userAgentParser: UserAgentParser = UserAgentService().loadParser(
         listOf(
             BrowsCapField.BROWSER,
             BrowsCapField.BROWSER_TYPE,
@@ -27,9 +36,16 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         )
     )
 
+    /**
+     * Function to parse user-agent from the passed in request and save information to the attached database in the
+     * form of a TrackedUser
+     * @see edu.carroll.cs389.jpa.model.TrackedUser
+     *
+     * @param req: the HTTP Servlet Request which corresponds to a client attempting to access a webpage within the app
+     */
     override fun trackClient(req: HttpServletRequest) {
         log.debug("trackClient: Attempting to track connecting client")
-        val clientInfo: Capabilities = parser.parse(req.getHeader("User-Agent"))
+        val clientInfo: Capabilities = userAgentParser.parse(req.getHeader("User-Agent"))
         val ipv4: String = if (req.remoteAddr == "0:0:0:0:0:0:0:1") {
             "127.0.0.1"
         } else {
@@ -38,21 +54,28 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
 
         // null-check and format browser string (java library has potential to return null)
         var browser: String? = null
+        // if we have a browser and corresponding version
         if (clientInfo.browser != null && (clientInfo.browserMajorVersion != null && clientInfo.browserMajorVersion != "Unknown")) {
             log.debug("trackClient: $ipv4 successfully acquired browser info")
             browser = "${clientInfo.browser} ${clientInfo.browserMajorVersion}"
-        } else if (clientInfo.browser != null && (clientInfo.browserMajorVersion == null || clientInfo.browserMajorVersion == "Unknown")) {
+        }
+        // if we have a browser but not a corresponding version
+        else if (clientInfo.browser != null && (clientInfo.browserMajorVersion == null || clientInfo.browserMajorVersion == "Unknown")) {
             log.warn("trackClient: $ipv4 client browser missing version tag")
             browser = clientInfo.browser
         } else {
             log.warn("trackClient: $ipv4 client has no browser info")
         }
 
+        // null-check and format operating system string (java library has potential to return null)
         var os: String? = null
+        // if we have a platform and corresponding version
         if (clientInfo.platform != null && (clientInfo.platformVersion != null && clientInfo.platformVersion != "Unknown")) {
             log.debug("trackClient: $ipv4 successfully acquired OS info")
             os = "${clientInfo.platform} ${clientInfo.platformVersion}"
-        } else if (clientInfo.platform != null && (clientInfo.platformVersion == null || clientInfo.platformVersion == "Unknown")) {
+        }
+        // if we have a platform but not a corresponding version
+        else if (clientInfo.platform != null && (clientInfo.platformVersion == null || clientInfo.platformVersion == "Unknown")) {
             log.warn("trackClient: $ipv4 client OS missing version tag")
             os = clientInfo.platform
         } else {

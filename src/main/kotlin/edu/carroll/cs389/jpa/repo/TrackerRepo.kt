@@ -14,7 +14,8 @@ interface TrackerRepo : JpaRepository<TrackedUser, Int> {
      *
      * @param ipv4: The ipv4 address we would like to search the database for
      *
-     *@return A list of all TrackedUser entities in the database which match the search condition
+     * @return A list of all TrackedUser entities in the database which match the search condition
+     * @see edu.carroll.cs389.jpa.model.TrackedUser
      */
     fun findByClientIpv4Address(ipv4: String): List<TrackedUser>
 }

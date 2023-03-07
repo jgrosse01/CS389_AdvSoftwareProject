@@ -15,11 +15,17 @@ import org.springframework.web.servlet.HandlerInterceptor
  *
  * @param trackerService: Injected TrackService implementation which will be used to track client information upon
  *                        intercepting request
+ * @see edu.carroll.cs389.service.tracker.TrackService
+ *
  * @param trackerInterceptorProperties: Injected TrackerInterceptorProperties object which allows reference to custom
  *                                      application.properties configurations related to request tracking
+ * @see edu.carroll.cs389.configuration.TrackerInterceptorProperties
  */
 @Component
-class TrackerInterceptor(@Qualifier("trackServiceRaw") private val trackerService: TrackService, private val trackerInterceptorProperties: TrackerInterceptorProperties) : HandlerInterceptor {
+class TrackerInterceptor(
+    @Qualifier("trackServiceRaw") private val trackerService: TrackService,
+    private val trackerInterceptorProperties: TrackerInterceptorProperties
+) : HandlerInterceptor {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(TrackerInterceptor::class.java)
     }
