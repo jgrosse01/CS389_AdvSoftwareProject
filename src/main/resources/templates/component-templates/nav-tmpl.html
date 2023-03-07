@@ -5,8 +5,17 @@
     <title>Navbar Template</title>
 </head>
 <body>
-<div th:fragment="navbar" class="d-flex align-items-center justify-content-center" style="color: red;">
-    HTML Inject Test
-</div>
+<nav class="navbar fixed-top bg-purple" th:fragment="navbar">
+    <div class="container-fluid px-5">
+        <div class="container-lg nav justify-content-center">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" href="#">Overview</a>
+            <a class="nav-link" href="#">Projects</a>
+            <a class="nav-link" th:href="@{/ip_info}">Database Queries</a>
+        </div>
+    </div>
+</nav>
+
+
 </body>
 </html>
