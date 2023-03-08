@@ -4,6 +4,11 @@ a.nav-link {
     color: #eee;
 }
 
+a.nav-link:hover {
+    background-color: #ccc;
+    color: #492539;
+}
+
 .bg-purple {
     background-color: #492539 !important;
 }
