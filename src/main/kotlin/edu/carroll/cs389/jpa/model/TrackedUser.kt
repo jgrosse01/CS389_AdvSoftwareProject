@@ -1,6 +1,7 @@
 package edu.carroll.cs389.jpa.model
 
 import jakarta.persistence.*
+import java.io.Serializable
 import java.sql.Timestamp
 import java.util.*
 
@@ -9,7 +10,7 @@ import java.util.*
  */
 @Entity
 @Table(name = "TrackedUsers")
-open class TrackedUser() {
+open class TrackedUser() : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L
         private val VALID_OS: List<String> = listOf<String>("Windows", "Mac OS", "Unix-Based", "iOS", "android")
@@ -57,6 +58,12 @@ open class TrackedUser() {
 
     @Column(name = "url_visited", nullable = false)
     private lateinit var clientConnectionRequestedPage: String
+
+    fun clientIpv4Address(): String {return clientIpv4Address}
+    fun clientOperatingSystem(): String {return clientOperatingSystem}
+    fun clientBrowserInfo(): String {return clientBrowserInfo}
+    fun clientConnectionAttemptTimestamp(): Timestamp {return clientConnectionAttemptTimestamp}
+    fun clientConnectionRequestedPage(): String {return clientConnectionRequestedPage}
 
     /**
      * Override of the java object equals function for a TrackedUser
