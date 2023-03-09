@@ -24,7 +24,9 @@ class DbQueryController(private val trackerRepo: TrackerRepo) {
     }
 
     /**
-     * Currently just returns a blank template. Will be adjusted later to reflect page content.
+     * GetMapping function which will populate the on page table with the entire contents of the database.
+     *
+     * @return an HTML page for the ip_info domain with modelAttribute trackedUsers
      */
     @GetMapping("/ip_info")
     fun ipInfoGet(model: Model): String {
@@ -34,7 +36,11 @@ class DbQueryController(private val trackerRepo: TrackerRepo) {
     }
 
     /**
-     * Currently just returns a blank template. Will return a template with filled table.html later.
+     * GetMapping function which will populate the on page table the search results from a post request.
+     *
+     * Currently unused as search form not yet implemented.
+     *
+     * @return an HTML page for the ip_info domain with modelAttribute trackedUsers
      */
     @PostMapping("/ip_info")
     fun ipInfoPost(model: Model, @ModelAttribute("clientIpv4Address") clientIpv4Address: String): String {
