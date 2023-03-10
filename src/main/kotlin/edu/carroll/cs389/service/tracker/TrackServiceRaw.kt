@@ -83,7 +83,7 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         }
 
         // save trackedUser to DB with potentially null val for OS/Browser
-        val user: TrackedUser = TrackedUser(req.remoteAddr, os, browser, req.requestURI.toString())
+        val user: TrackedUser = TrackedUser(req.remoteAddr, os, browser, req.requestURI)
         log.debug("trackClient: Successfully created TrackedUser entity for client ${req.remoteAddr}")
         return try {
             trackerRepo.save(user)
