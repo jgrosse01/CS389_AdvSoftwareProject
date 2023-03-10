@@ -16,6 +16,8 @@ import org.springframework.web.servlet.HandlerInterceptor
 
 /**
  * Interceptor which handles client tracking outside of HTML Controllers
+ * Utilizes the bluconic browscap library to capture information from User-Agent field of request
+ * @see com.blueconic.browscap
  *
  * @param trackerService: Injected TrackService implementation which will be used to track client information upon
  *                        intercepting request
