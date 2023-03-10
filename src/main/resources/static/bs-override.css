@@ -28,6 +28,7 @@ a.nav-link:hover {
     border-right: solid #492539 0.2em;
     padding-left: 4em;
     padding-right: 4em;
+    padding-bottom: 2em;
 }
 
 .bso-table {
