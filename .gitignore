@@ -42,3 +42,6 @@ runtime-logs/
 ### DEV CONFIGS ###
 src/main/resources/application-dev.yml
 src/main/resources/application.yml
+
+### Docker Database Data ###
+docker/Grosse_AdvSoft_App/postgres_data
