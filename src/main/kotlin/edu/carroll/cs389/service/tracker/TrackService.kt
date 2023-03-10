@@ -15,9 +15,21 @@ interface TrackService {
      * Once a TrackedUser instance is created from the data in the passed servlet request, it is then saved to the
      * application attached database.
      *
-     * @param req: the HTTP Servlet Request which corresponds to a client attempting to access a webpage within the app
+     * @param ipv4: String representation of the connecting client ipv4 address
+     * @param browser: Name of the browser from the connecting client
+     * @param browserMajorVersion: Version of the browser from the connecting client
+     * @param platform: Operating System of the connecting client
+     * @param platformVersion: Version of the connecting operating system
+     * @param uri: the subdomain the connecting client is trying to access
      *
      * @see edu.carroll.cs389.jpa.model.TrackedUser
      */
-    fun trackClient(req: HttpServletRequest): Boolean
+    fun trackClient(
+        ipv4: String?,
+        browser: String?,
+        browserMajorVersion: String?,
+        platform: String?,
+        platformVersion: String?,
+        uri: String?
+    ): Boolean
 }

@@ -13,11 +13,14 @@ class TrackServiceProxyLB : TrackService {
     /**
      * NOT YET IMPLEMENTED
      */
-    override fun trackClient(req: HttpServletRequest): Boolean{
-        var remoteAddr = req.getHeader("X-FORWARDED-FOR")
-        if (remoteAddr != null) {
-            remoteAddr = req.remoteAddr
-        }
+    override fun trackClient(
+        ipv4: String?,
+        browser: String?,
+        browserMajorVersion: String?,
+        platform: String?,
+        platformVersion: String?,
+        uri: String?
+    ): Boolean {
         TODO("Not yet implemented")
     }
 }

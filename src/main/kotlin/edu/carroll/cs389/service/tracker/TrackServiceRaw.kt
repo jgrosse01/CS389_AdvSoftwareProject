@@ -26,43 +26,47 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         private val log: Logger = LoggerFactory.getLogger(TrackServiceRaw::class.java)
     }
 
-    private val userAgentParser: UserAgentParser = UserAgentService().loadParser(
-        listOf(
-            BrowsCapField.BROWSER,
-            BrowsCapField.BROWSER_TYPE,
-            BrowsCapField.BROWSER_MAJOR_VERSION,
-            BrowsCapField.PLATFORM,
-            BrowsCapField.PLATFORM_VERSION
-        )
-    )
-
     /**
      * Function to parse user-agent from the passed in request and save information to the attached database in the
      * form of a TrackedUser
      * @see edu.carroll.cs389.jpa.model.TrackedUser
      *
-     * @param req: the HTTP Servlet Request which corresponds to a client attempting to access a webpage within the app
+     * @param ipv4: String representation of the connecting client ipv4 address
+     * @param browser: Name of the browser from the connecting client
+     * @param browserMajorVersion: Version of the browser from the connecting client
+     * @param platform: Operating System of the connecting client
+     * @param platformVersion: Version of the connecting operating system
+     * @param uri: the subdomain the connecting client is trying to access
+     *
+     * @return A boolean representing success in saving the information to the database
      */
-    override fun trackClient(req: HttpServletRequest): Boolean {
-        log.debug("trackClient: Attempting to track connecting client")
-        val clientInfo: Capabilities = userAgentParser.parse(req.getHeader("User-Agent"))
-        val ipv4: String = if (req.remoteAddr == "0:0:0:0:0:0:0:1") {
-            "127.0.0.1"
-        } else {
-            req.remoteAddr
+    override fun trackClient(
+        ipv4: String?,
+        browser: String?,
+        browserMajorVersion: String?,
+        platform: String?,
+        platformVersion: String?,
+        uri: String?): Boolean {
+        // if we are missing and ipv4 or uri then abort
+        if (ipv4 == null || ipv4 == "Unknown") {
+            log.error("trackClient: client does not have a valid connecting ipv4 address, request invalid, aborting")
+            return false
+        }
+        if (uri == null || uri == "Unknown") {
+            log.error("trackClient: client is attempting to connect to a page that does not exist, request invalid, aborting")
+            return false
         }
 
-        // null-check and format browser string (java library has potential to return null)
-        var browser: String? = null
         // if we have a browser and corresponding version
-        if (clientInfo.browser != null && (clientInfo.browserMajorVersion != null && clientInfo.browserMajorVersion != "Unknown")) {
+        var saveBrowser: String? = null
+        if (browser != null && (browserMajorVersion != null && browserMajorVersion != "Unknown")) {
             log.debug("trackClient: $ipv4 successfully acquired browser info")
-            browser = "${clientInfo.browser} ${clientInfo.browserMajorVersion}"
+            saveBrowser = "$browser $browserMajorVersion"
         }
         // if we have a browser but not a corresponding version
-        else if (clientInfo.browser != null && (clientInfo.browserMajorVersion == null || clientInfo.browserMajorVersion == "Unknown")) {
+        else if (browser != null && (browserMajorVersion == null || browserMajorVersion == "Unknown")) {
             log.warn("trackClient: $ipv4 client browser missing version tag")
-            browser = clientInfo.browser
+            saveBrowser = browser
         } else {
             log.warn("trackClient: $ipv4 client has no browser info")
         }
@@ -70,21 +74,21 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         // null-check and format operating system string (java library has potential to return null)
         var os: String? = null
         // if we have a platform and corresponding version
-        if (clientInfo.platform != null && (clientInfo.platformVersion != null && clientInfo.platformVersion != "Unknown")) {
+        if (platform != null && (platformVersion != null && platformVersion != "Unknown")) {
             log.debug("trackClient: $ipv4 successfully acquired OS info")
-            os = "${clientInfo.platform} ${clientInfo.platformVersion}"
+            os = "$platform $platformVersion"
         }
         // if we have a platform but not a corresponding version
-        else if (clientInfo.platform != null && (clientInfo.platformVersion == null || clientInfo.platformVersion == "Unknown")) {
+        else if (platform != null && (platformVersion == null || platformVersion == "Unknown")) {
             log.warn("trackClient: $ipv4 client OS missing version tag")
-            os = clientInfo.platform
+            os = platform
         } else {
             log.warn("trackClient: $ipv4 client has no OS info")
         }
 
         // save trackedUser to DB with potentially null val for OS/Browser
-        val user: TrackedUser = TrackedUser(req.remoteAddr, os, browser, req.requestURI)
-        log.debug("trackClient: Successfully created TrackedUser entity for client ${req.remoteAddr}")
+        val user: TrackedUser = TrackedUser(ipv4, os, saveBrowser, uri)
+        log.debug("trackClient: Successfully created TrackedUser entity for client $ipv4")
         return try {
             trackerRepo.save(user)
             log.info("trackClient: Successfully tracked $ipv4")
