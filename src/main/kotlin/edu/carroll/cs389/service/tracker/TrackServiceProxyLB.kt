@@ -13,7 +13,7 @@ class TrackServiceProxyLB : TrackService {
     /**
      * NOT YET IMPLEMENTED
      */
-    override fun trackClient(req: HttpServletRequest){
+    override fun trackClient(req: HttpServletRequest): Boolean{
         var remoteAddr = req.getHeader("X-FORWARDED-FOR")
         if (remoteAddr != null) {
             remoteAddr = req.remoteAddr
