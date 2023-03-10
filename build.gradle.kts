@@ -31,7 +31,6 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("com.h2database:h2:2.1.214")
 	testImplementation("org.hibernate.orm:hibernate-core:6.2.0.CR3")
-	testImplementation("org.mockito:mockito-core:2.1.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
