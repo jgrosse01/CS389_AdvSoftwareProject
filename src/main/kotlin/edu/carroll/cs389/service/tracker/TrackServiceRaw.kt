@@ -42,23 +42,23 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
         platformVersion: String?,
         uri: String?): Boolean {
         // if we are missing and ipv4 or uri then abort
-        if (ipv4 == null || ipv4 == "Unknown") {
+        if (ipv4 == null || ipv4 == "Unknown" || ipv4 == "") {
             log.error("trackClient: client does not have a valid connecting ipv4 address, request invalid, aborting")
             return false
         }
-        if (uri == null || uri == "Unknown") {
+        if (uri == null || uri == "Unknown" || uri == "") {
             log.error("trackClient: client is attempting to connect to a page that does not exist, request invalid, aborting")
             return false
         }
 
         // if we have a browser and corresponding version
         var saveBrowser: String? = null
-        if (browser != null && (browserMajorVersion != null && browserMajorVersion != "Unknown")) {
+        if (browser != null && (browserMajorVersion != null && browserMajorVersion != "Unknown" && browserMajorVersion != "")) {
             log.debug("trackClient: $ipv4 successfully acquired browser info")
             saveBrowser = "$browser $browserMajorVersion"
         }
         // if we have a browser but not a corresponding version
-        else if (browser != null && (browserMajorVersion == null || browserMajorVersion == "Unknown")) {
+        else if (browser != null && (browserMajorVersion == null || browserMajorVersion == "Unknown" || browserMajorVersion == "")) {
             log.warn("trackClient: $ipv4 client browser missing version tag")
             saveBrowser = browser
         } else {
@@ -68,12 +68,12 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
         // null-check and format operating system string (java library has potential to return null)
         var os: String? = null
         // if we have a platform and corresponding version
-        if (platform != null && (platformVersion != null && platformVersion != "Unknown")) {
+        if (platform != null && (platformVersion != null && platformVersion != "Unknown" && platformVersion != "")) {
             log.debug("trackClient: $ipv4 successfully acquired OS info")
             os = "$platform $platformVersion"
         }
         // if we have a platform but not a corresponding version
-        else if (platform != null && (platformVersion == null || platformVersion == "Unknown")) {
+        else if (platform != null && (platformVersion == null || platformVersion == "Unknown" || platformVersion == "")) {
             log.warn("trackClient: $ipv4 client OS missing version tag")
             os = platform
         } else {
