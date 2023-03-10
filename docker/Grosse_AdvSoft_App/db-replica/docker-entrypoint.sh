@@ -7,7 +7,7 @@ do
 echo "Waiting for primary to ping..."
 sleep 3s
 done
-until pg_basebackup -h pg_primary -D ${PGDATA} -U ${PG_REP_USER} -X stream -v -R
+until pg_basebackup -h db_primary -D ${PGDATA} -U ${PG_REP_USER} -X stream -v -R
 do
 echo "Waiting for primary to connect..."
 sleep 3s
