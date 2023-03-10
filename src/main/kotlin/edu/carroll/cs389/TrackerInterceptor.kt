@@ -1,4 +1,4 @@
-package edu.carroll.cs389.service.interceptor
+package edu.carroll.cs389
 
 import edu.carroll.cs389.configuration.TrackerInterceptorProperties
 import edu.carroll.cs389.service.tracker.TrackService
