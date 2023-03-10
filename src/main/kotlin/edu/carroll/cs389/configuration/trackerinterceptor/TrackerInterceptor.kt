@@ -1,6 +1,6 @@
-package edu.carroll.cs389
+package edu.carroll.cs389.configuration.trackerinterceptor
 
-import edu.carroll.cs389.configuration.TrackerInterceptorProperties
+import edu.carroll.cs389.configuration.trackerinterceptor.TrackerInterceptorProperties
 import edu.carroll.cs389.service.tracker.TrackService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

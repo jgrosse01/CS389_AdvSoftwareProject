@@ -1,4 +1,4 @@
-package edu.carroll.cs389
+package edu.carroll.cs389.configuration.trackerinterceptor
 
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry

@@ -1,4 +1,4 @@
-package edu.carroll.cs389.configuration
+package edu.carroll.cs389.configuration.trackerinterceptor
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
