@@ -19,5 +19,5 @@ interface TrackService {
      *
      * @see edu.carroll.cs389.jpa.model.TrackedUser
      */
-    fun trackClient(req: HttpServletRequest)
+    fun trackClient(req: HttpServletRequest): Boolean
 }

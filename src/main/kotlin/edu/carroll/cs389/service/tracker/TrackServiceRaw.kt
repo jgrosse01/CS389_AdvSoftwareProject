@@ -43,7 +43,7 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
      *
      * @param req: the HTTP Servlet Request which corresponds to a client attempting to access a webpage within the app
      */
-    override fun trackClient(req: HttpServletRequest) {
+    override fun trackClient(req: HttpServletRequest): Boolean {
         log.debug("trackClient: Attempting to track connecting client")
         val clientInfo: Capabilities = userAgentParser.parse(req.getHeader("User-Agent"))
         val ipv4: String = if (req.remoteAddr == "0:0:0:0:0:0:0:1") {
@@ -85,11 +85,13 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
         // save trackedUser to DB with potentially null val for OS/Browser
         val user: TrackedUser = TrackedUser(req.remoteAddr, os, browser, req.requestURI.toString())
         log.debug("trackClient: Successfully created TrackedUser entity for client ${req.remoteAddr}")
-        try {
+        return try {
             trackerRepo.save(user)
             log.info("trackClient: Successfully tracked $ipv4")
+            true
         } catch (e: Exception) {
             log.error("trackClient: Failed to save client info to database")
+            false
         }
     }
 }
