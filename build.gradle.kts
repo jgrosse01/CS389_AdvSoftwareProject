@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "edu.carroll"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1-alpha"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -29,8 +29,8 @@ dependencies {
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
-	testImplementation("com.h2database:h2:2.1.214")
-	testImplementation("org.hibernate.orm:hibernate-core:6.2.0.CR3")
+	testImplementation("com.h2database:h2")
+	testImplementation("org.hibernate.orm:hibernate-core")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
