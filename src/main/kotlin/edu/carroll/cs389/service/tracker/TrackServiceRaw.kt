@@ -1,12 +1,7 @@
 package edu.carroll.cs389.service.tracker
 
-import com.blueconic.browscap.BrowsCapField
-import com.blueconic.browscap.Capabilities
-import com.blueconic.browscap.UserAgentParser
-import com.blueconic.browscap.UserAgentService
 import edu.carroll.cs389.jpa.model.TrackedUser
 import edu.carroll.cs389.jpa.repo.TrackerRepo
-import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -15,13 +10,12 @@ import org.springframework.stereotype.Service
  * Implementation of TrackService which takes raw (not passed through a load balancer or proxy)
  * Uses browscap library to process user-agent information from servlet requests
  * @see TrackService
- * @see com.blueconic.browscap
  *
  * @param trackerRepo: JPA repository that allows search by client ipv4 address
  * @see edu.carroll.cs389.jpa.repo.TrackerRepo
  */
 @Service
-class TrackServiceRaw(private val trackerRepo: TrackerRepo) : TrackService {
+class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(TrackServiceRaw::class.java)
     }
