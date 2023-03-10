@@ -29,9 +29,10 @@ dependencies {
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
+	testImplementation("com.h2database:h2:2.1.214")
+	testImplementation("org.hibernate.orm:hibernate-core:6.2.0.CR3")
+	testImplementation("org.mockito:mockito-core:2.1.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("com.h2database:h2")
-	testImplementation("org.hibernate:hibernate-core")
 }
 
 tasks.withType<KotlinCompile> {
