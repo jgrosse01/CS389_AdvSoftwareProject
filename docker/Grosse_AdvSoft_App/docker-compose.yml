@@ -1,12 +1,12 @@
 version: "3"
 services:
   application:
-    build: resume-tracker
+    image: resume-tracker:latest
     depends_on:
       db_primary:
         condition: service_started
     ports:
-      - '0.0.0.0:8080:8080'
+      - '0.0.0.0:8080:80'
     networks:
       default:
         aliases:
