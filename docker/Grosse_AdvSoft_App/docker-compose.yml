@@ -1,12 +1,21 @@
 version: "3"
 services:
   application:
-    image: resume-tracker:latest
+    build: resume-tracker
+    restart: unless-stopped
     depends_on:
       db_primary:
         condition: service_started
     ports:
       - '0.0.0.0:8080:80'
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url" : "jdbc:postgresql://db_primary:5432/tracker_db",
+        "spring.datasource.username" : "postgres",
+        "spring.datasource.password" : "admin",
+        "spring.datasource.driverClassName" : "org.postgresql.Driver",
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
     networks:
       default:
         aliases:
