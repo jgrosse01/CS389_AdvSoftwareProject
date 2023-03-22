@@ -4,7 +4,7 @@ echo "*:*:*:$PG_REP_USER:$PG_REP_PASSWORD" > ~/.pgpass
 chmod 0600 ~/.pgpass
 until ping -c 1 -W 1 db_primary
 do
-echo "Waiting for primary to ping..."
+echo "Replica waiting for primary to ping..."
 sleep 3s
 done
 until pg_basebackup -h db_primary -D ${PGDATA} -U ${PG_REP_USER} -X stream -v -R
