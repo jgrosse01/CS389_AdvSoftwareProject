@@ -7,7 +7,7 @@ services:
       db_primary:
         condition: service_started
     ports:
-      - '0.0.0.0:8080:80'
+      - '0.0.0.0:80:80'
     environment:
       SPRING_APPLICATION_JSON: '{
         "spring.datasource.url" : "jdbc:postgresql://db_primary:5432/tracker_db",
