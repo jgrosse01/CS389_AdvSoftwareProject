@@ -20,7 +20,6 @@ services:
       default:
         aliases:
           - application_cluster
-  # I THINK APPLICATION IS DONE BUT NOT SURE
   
   db_primary:
     build: db-primary
