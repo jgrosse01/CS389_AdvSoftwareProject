@@ -93,6 +93,13 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
         }
     }
 
+    /**
+     * Method which abstracts database access through a service so that controllers are not directly accessing data.
+     *
+     * @param ipv4: The ipv4 address to search for within the database. Leave blank to get all.
+     *
+     * @return A list of all entries in the database matching the search term
+     */
     override fun queryDatabase(ipv4: String?): List<TrackedUser> {
         if (ipv4 == "default" || ipv4 == null) {
             return trackerRepo.findAll()
