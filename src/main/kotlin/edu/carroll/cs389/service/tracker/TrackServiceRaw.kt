@@ -92,4 +92,12 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
             false
         }
     }
+
+    override fun queryDatabase(ipv4: String?): List<TrackedUser> {
+        if (ipv4 == "default" || ipv4 == null) {
+            return trackerRepo.findAll()
+        } else {
+            return trackerRepo.findByClientIpv4Address(ipv4)
+        }
+    }
 }

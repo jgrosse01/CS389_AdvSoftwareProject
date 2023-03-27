@@ -1,5 +1,6 @@
 package edu.carroll.cs389.service.tracker
 
+import edu.carroll.cs389.jpa.model.TrackedUser
 import jakarta.servlet.http.HttpServletRequest
 
 /**
@@ -32,4 +33,13 @@ interface TrackService {
         platformVersion: String?,
         uri: String?
     ): Boolean
+
+    /**
+     * Method which abstracts database access through a service so that controllers are not directly accessing data.
+     *
+     * @param ipv4: The ipv4 address to search for within the database. Leave blank to get all.
+     *
+     * @return A list of all entries in the database matching the search term
+     */
+    fun queryDatabase(ipv4: String? = "default"): List<TrackedUser>
 }

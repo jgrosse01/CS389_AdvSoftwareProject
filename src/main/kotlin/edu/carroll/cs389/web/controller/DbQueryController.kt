@@ -2,6 +2,7 @@ package edu.carroll.cs389.web.controller
 
 import edu.carroll.cs389.jpa.model.TrackedUser
 import edu.carroll.cs389.jpa.repo.TrackerRepo
+import edu.carroll.cs389.service.tracker.TrackService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping
  * @see edu.carroll.cs389.service.tracker.TrackService
  */
 @Controller
-class DbQueryController(private val trackerRepo: TrackerRepo) {
+class DbQueryController(private val trackService: TrackService) {
     companion object{
         val log: Logger = LoggerFactory.getLogger(DbQueryController::class.java)
     }
@@ -31,7 +32,7 @@ class DbQueryController(private val trackerRepo: TrackerRepo) {
     @GetMapping("/ip_info")
     fun ipInfoGet(model: Model): String {
         log.info("ipInfoGet(): User has landed at the ip query page ('/ip_info')")
-        model.addAttribute("trackedUsers", trackerRepo.findAll())
+        model.addAttribute("trackedUsers", trackService.queryDatabase())
         return "ip_info"
     }
 
@@ -45,7 +46,7 @@ class DbQueryController(private val trackerRepo: TrackerRepo) {
     @PostMapping("/ip_info")
     fun ipInfoPost(model: Model, @ModelAttribute("clientIpv4Address") clientIpv4Address: String): String {
         log.info("ipInfoPost(): User has queried the database for ip information")
-        model.addAttribute("trackedUsers", trackerRepo.findByClientIpv4Address(clientIpv4Address))
+        model.addAttribute("trackedUsers", trackService.queryDatabase(clientIpv4Address))
         return "ip_info"
     }
 }
