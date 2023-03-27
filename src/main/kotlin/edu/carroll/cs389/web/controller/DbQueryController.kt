@@ -1,7 +1,5 @@
 package edu.carroll.cs389.web.controller
 
-import edu.carroll.cs389.jpa.model.TrackedUser
-import edu.carroll.cs389.jpa.repo.TrackerRepo
 import edu.carroll.cs389.service.tracker.TrackService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
