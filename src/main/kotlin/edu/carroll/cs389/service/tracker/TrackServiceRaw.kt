@@ -4,6 +4,7 @@ import edu.carroll.cs389.jpa.model.TrackedUser
 import edu.carroll.cs389.jpa.repo.TrackerRepo
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 /**
@@ -101,10 +102,10 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
      * @return A list of all entries in the database matching the search term
      */
     override fun queryDatabase(ipv4: String?): List<TrackedUser> {
-        if (ipv4 == "default" || ipv4 == null) {
-            return trackerRepo.findAll()
+        return if (ipv4 == "default" || ipv4 == null) {
+            trackerRepo.findAll(Sort.by(Sort.Direction.DESC, "ClientConnectionAttemptTimestamp"))
         } else {
-            return trackerRepo.findByClientIpv4Address(ipv4)
+            trackerRepo.findByClientIpv4AddressOrderByClientConnectionAttemptTimestampDesc(ipv4)
         }
     }
 }
