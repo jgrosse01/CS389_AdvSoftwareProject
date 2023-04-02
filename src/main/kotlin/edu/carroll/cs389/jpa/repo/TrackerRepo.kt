@@ -17,7 +17,7 @@ interface TrackerRepo : JpaRepository<TrackedUser, Int> {
      * @return A list of all TrackedUser entities in the database which match the search condition
      * @see edu.carroll.cs389.jpa.model.TrackedUser
      */
-    fun findByClientIpv4Address(ipv4: String): List<TrackedUser>
+    fun findByClientIpv4AddressOrderByClientConnectionAttemptTimestampDesc(ipv4: String): List<TrackedUser>
 
     /**
      * JPA Magic to define a function which will search the attached database by the page the client lands on
