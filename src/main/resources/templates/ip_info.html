@@ -2,18 +2,18 @@
 <html lang="en" xmlns:th="http://www/thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-    <title>Gross&eacute Homepage</title>
+    <title>Gross&eacute IP Info</title>
 
-    <link th:insert="~{component-templates/css-script-tmpl :: css-script}"></link>
+    <link th:insert="~{component-templates/header-tmpl :: head}"></link>
 </head>
 <body>
 <div class="container-lg bso-content">
     <div th:insert="~{component-templates/nav-tmpl :: navbar}"></div>
 
     <div class="col-12 anchor">
-        <h1 class="bso-page-title">Query the Database of Connection Info Here:</h1>
+        <h1 class="bso-page-title">Connection Information from the Database</h1>
 
-        <p>Search functionality not yet implemented</p>
+        <!-- <p>Search functionality not yet implemented</p> -->
 
         <div th:insert="~{component-templates/table :: table}"></div>
     </div>
