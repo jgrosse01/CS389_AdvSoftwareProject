@@ -66,8 +66,8 @@ class TrackerInterceptor(
             log.debug("preHandle: Ignoring tracking request to error page")
         }
         // ignore requests to css and js
-        else if (".css" in req.requestURI || ".js" in req.requestURI) {
-            log.debug("preHandle: Ignoring tracking request to CSS/JS")
+        else if ("css" in req.requestURI || "js" in req.requestURI || "vendor" in req.requestURI || "image" in req.requestURI) {
+            log.debug("preHandle: Ignoring tracking request to static content")
         }
         // log any other request
         else {
