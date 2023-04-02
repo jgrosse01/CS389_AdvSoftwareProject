@@ -24,6 +24,7 @@ class DbQueryController(private val trackService: TrackService) {
 
     /**
      * GetMapping function which will populate the on page table with the entire contents of the database.
+     * Uses a TrackService implementation to query the database
      *
      * @return an HTML page for the ip_info domain with modelAttribute trackedUsers
      */
@@ -36,6 +37,7 @@ class DbQueryController(private val trackService: TrackService) {
 
     /**
      * GetMapping function which will populate the on page table the search results from a post request.
+     * Uses a TrackService implementation to query the database.
      *
      * Currently unused as search form not yet implemented.
      *

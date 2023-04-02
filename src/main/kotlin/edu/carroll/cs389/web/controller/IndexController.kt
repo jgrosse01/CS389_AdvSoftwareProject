@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping
 
 /**
  * HTML Controller to process non-specific requests (those which do not fall into a particular category within the site)
+ * Currently only processes requests to the homepage as that is the only page besides the database query page.
  */
 @Controller
 class IndexController() {
@@ -15,7 +16,9 @@ class IndexController() {
     }
 
     /**
-     * Process HTTPServletRequests to teh "/" domain and return the corresponding HTML
+     * GetMapping function which returns the html template for the home page.
+     *
+     * @return an html template for the "/" domain
      */
     @GetMapping("/")
     fun index(): String {
