@@ -19,6 +19,7 @@ a.nav-link:hover {
 
 .bso-page-title {
     text-align: center;
+    padding-bottom: 0.5em;
 }
 
 .bso-content {
@@ -86,6 +87,10 @@ a.nav-link:hover {
     border-color: #ccc;
     color: #492539;
     box-shadow: 0 0.1em 0.1em rgba(0, 0, 0, 0.075) inset, 0 0 0.25em #492539;
+}
+
+.bso-image {
+    border: solid #492539 0.2em;
 }
 
 body {
