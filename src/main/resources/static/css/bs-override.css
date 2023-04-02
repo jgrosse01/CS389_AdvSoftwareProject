@@ -51,6 +51,42 @@ a.nav-link:hover {
     font-size: 1.2em;
 }
 
+.nav-brand:hover {
+    color: #eee !important;
+    background-color: #492539 !important;
+}
+
+.footer {
+    color: #aaa;
+}
+
+.footer a{
+    color: #aaa  !important;
+}
+
+.card-theme {
+    background-color: #eee;
+    border: solid #492539 0.2em;
+}
+
+.btn-theme {
+    background-color: #492539;
+    border-color: #492539;
+}
+
+.btn-theme:hover {
+    background-color: #ccc;
+    border-color: #ccc;
+    color: #492539;
+}
+
+.btn-theme:focus {
+    background-color: #ccc;
+    border-color: #ccc;
+    color: #492539;
+    box-shadow: 0 0.1em 0.1em rgba(0, 0, 0, 0.075) inset, 0 0 0.25em #492539;
+}
+
 body {
     background-color: #444;
 }
