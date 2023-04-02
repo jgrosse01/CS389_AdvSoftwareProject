@@ -12,6 +12,6 @@ You are welcome to download the project, build it, and set up the database yours
 
 3. Proceed to unzip this on your local machine and, through the command-line interface of your choosing, navigate into the top level of the folder produced by the zip extraction.
 
-4. Lastly, run the command "docker compose up" to launch the application.
+4. Lastly, run the command "docker compose up" to launch the application. (If you have used this application prior to now, make sure to run "docker compose build" before you run "docker compose up")
 
 5. The webapp can be accessed via the address "localhost".
