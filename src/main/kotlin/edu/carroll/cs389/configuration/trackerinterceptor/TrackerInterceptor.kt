@@ -65,6 +65,10 @@ class TrackerInterceptor(
         else if (req.requestURI == "/error" && this.trackerInterceptorProperties.ignoreErrorPageWhenTracking) {
             log.debug("preHandle: Ignoring tracking request to error page")
         }
+        // ignore requests to css and js
+        else if (".css" in req.requestURI || ".js" in req.requestURI) {
+            log.debug("preHandle: Ignoring tracking request to CSS/JS")
+        }
         // log any other request
         else {
             log.debug("preHandle: Tracking request for ${req.requestURI} being processed")
