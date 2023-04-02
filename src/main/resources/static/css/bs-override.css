@@ -49,6 +49,7 @@ a.nav-link:hover {
 
 .nav-brand {
     font-size: 1.2em;
+    white-space: nowrap;
 }
 
 .nav-brand:hover {
