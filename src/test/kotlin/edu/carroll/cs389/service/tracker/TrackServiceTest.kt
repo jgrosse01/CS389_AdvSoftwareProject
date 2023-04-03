@@ -3,18 +3,16 @@ package edu.carroll.cs389.service.tracker
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.util.AssertionErrors.assertFalse
 import org.springframework.test.util.AssertionErrors.assertTrue
+import org.springframework.transaction.annotation.Transactional
 
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 class TrackServiceTest {
 
-    @Qualifier("trackServiceRaw")
     @Autowired
     private lateinit var trackService: TrackService
 
