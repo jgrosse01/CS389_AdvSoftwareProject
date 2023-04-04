@@ -4,20 +4,124 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.util.AssertionErrors.assertFalse
 import org.springframework.test.util.AssertionErrors.assertTrue
-import org.springframework.transaction.annotation.Transactional
 
 
 @SpringBootTest
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class TrackServiceTest {
 
     @Autowired
     private lateinit var trackService: TrackService
 
-    // Note: No tests on query database method as that is simply a
-    // wrapper around jpaRepository which we cannot fix if it breaks
+    /**********************************/
+    /* General DB Persistence Testing */
+    /**********************************/
+
+    @Test
+    fun testDbIsEmptyWithoutInsert() {
+        assertTrue(
+            "testDbIsEmptyWithoutInsert(): test db (newly instantiated and cleaned after every test" +
+                    " should be empty without inserting data",
+            trackService.queryDatabase().isEmpty()
+        )
+    }
+
+
+    @Test
+    fun testPersistenceOfTwoInserts() {
+        val ipv41: String = "192.168.1.1"
+        val browser1: String = "Firefox"
+        val browserMajorVersion1: String = "110"
+        val platform1: String = "Ubuntu"
+        val platformVersion1: String = "22.04 LTS"
+        val requestURI1: String = "/"
+
+        val ipv42: String = "172.158.27.139"
+        val browser2: String = "Chrome"
+        val browserMajorVersion2: String = "37"
+        val platform2: String = "Windows"
+        val platformVersion2: String = "10 NT"
+        val requestURI2: String = "/ip_info"
+
+        assertTrue(
+            "testPersistenceOfTwoInserts(): should succeed with valid user agent",
+            trackService.trackClient(ipv41, browser1, browserMajorVersion1, platform1, platformVersion1, requestURI1)
+        )
+
+        assertTrue(
+            "testPersistenceOfTwoInserts(): should succeed with valid user agent",
+            trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+        )
+
+
+        // assuming that queryDatabase works correctly (must assume something works)
+        // we know the list is ordered by descending timestamp
+        val results = trackService.queryDatabase()
+        val user1 = results[1]
+        val user2 = results[0]
+
+        assertTrue(
+            "testPersistenceOfTwoInserts(): should query information from second insert first due to timestamp",
+            ipv41 == user1.clientIpv4Address() &&
+                    "$browser1 $browserMajorVersion1" == user1.clientBrowserInfo() &&
+                    "$platform1 $platformVersion1" == user1.clientOperatingSystem() &&
+                    requestURI1 == user1.clientConnectionRequestedPage()
+        )
+
+        assertTrue(
+            "testPersistenceOfTwoInserts(): should query information from first insert first due to timestamp",
+            ipv42 == user2.clientIpv4Address() &&
+                    "$browser2 $browserMajorVersion2" == user2.clientBrowserInfo() &&
+                    "$platform2 $platformVersion2" == user2.clientOperatingSystem() &&
+                    requestURI2 == user2.clientConnectionRequestedPage()
+        )
+
+    }
+
+    @Test
+    fun testVarietyOfData() {
+        val ipv4s: List<String> = listOf<String>("18.354.563.541", "72.175.63.11", "174.283.69.420", "542.172.378.29")
+        val browsers: List<String> = listOf<String>("Firefox", "Opera", "Brave", "Chrome")
+        val browserMajorVersions: List<String> = listOf<String>("112", "7", "v1.49.132", "32")
+        val platforms: List<String> = listOf<String>("Windows", "macOS", "Ubuntu", "Mint")
+        val platformVersions: List<String> = listOf<String>("10 NT", "Catalina", "22.04 LTS", "Cinnamon 14")
+        val requests: List<String> = listOf<String>("/", "/dummy_link", "/ip_info", "/bs-override.css")
+
+        for (i in 0..3) {
+            assertTrue(
+                "testVarietyOfData(): entry $i should insert properly",
+                trackService.trackClient(ipv4s[i], browsers[i], browserMajorVersions[i],
+                    platforms[i], platformVersions[i], requests[i])
+            )
+
+            assertTrue(
+                "testVarietyOfData(): Db should contain ${i+1} entries",
+                trackService.queryDatabase().size == i+1
+            )
+        }
+
+        val results = trackService.queryDatabase()
+
+        for (i in 3 downTo 0) {
+            val user = results[3-i]
+            assertTrue(
+                "testVarietyOfData(): entry $i should be queried properly",
+                ipv4s[i] == user.clientIpv4Address() &&
+                "${browsers[i]} ${browserMajorVersions[i]}" == user.clientBrowserInfo() &&
+                "${platforms[i]} ${platformVersions[i]}" == user.clientOperatingSystem() &&
+                requests[i] == user.clientConnectionRequestedPage()
+            )
+        }
+    }
+
+    /*****************************************************/
+    /*****************************************************/
+    /* THESE TESTS ALL PERTAIN TO THE trackClient METHOD */
+    /*****************************************************/
+    /*****************************************************/
 
     /***********************************************/
     /* Tests to handle expected input (Happy Path) */
@@ -41,6 +145,16 @@ class TrackServiceTest {
             "trackClientTestValidUserAgent(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgent(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+            "$browser $browserMajorVersion" == user.clientBrowserInfo() &&
+            "$platform $platformVersion" == user.clientOperatingSystem() &&
+            requestURI == user.clientConnectionRequestedPage()
+        )
     }
 
     @Test
@@ -60,6 +174,16 @@ class TrackServiceTest {
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
+        )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingBrowserVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    browser == user.clientBrowserInfo() &&
+                    "$platform $platformVersion" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
         )
     }
 
@@ -81,6 +205,16 @@ class TrackServiceTest {
             "trackClientTestValidUserAgentMissingOSVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingOSVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == user.clientBrowserInfo() &&
+                    platform == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
+        )
     }
 
     @Test
@@ -100,6 +234,16 @@ class TrackServiceTest {
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowser(): should have one item in database after test",
             trackService.queryDatabase().size == 1
+        )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingBrowser(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "unknown" == user.clientBrowserInfo() &&
+                    "$platform $platformVersion" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
         )
     }
 
@@ -121,6 +265,16 @@ class TrackServiceTest {
             "trackClientTestValidUserAgentMissingOS(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingOS(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == user.clientBrowserInfo() &&
+                    "unknown" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
+        )
     }
 
     @Test
@@ -140,6 +294,16 @@ class TrackServiceTest {
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserAndVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
+        )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingBrowserAndVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "unknown" == user.clientBrowserInfo() &&
+                    "$platform $platformVersion" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
         )
     }
 
@@ -161,6 +325,16 @@ class TrackServiceTest {
             "trackClientTestValidUserAgentMissingOSAndVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingOSAndVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == user.clientBrowserInfo() &&
+                    "unknown" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
+        )
     }
 
     @Test
@@ -181,6 +355,16 @@ class TrackServiceTest {
             "trackClientTestValidUserAgentMissingOSAndVersionAndBrowserVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingOSAndVersionAndBrowserVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    browser == user.clientBrowserInfo() &&
+                    "unknown" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
+        )
     }
 
     @Test
@@ -200,6 +384,16 @@ class TrackServiceTest {
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserAndVersionAndOSVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
+        )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingBrowserAndVersionAndOSVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "unknown" == user.clientBrowserInfo() &&
+                    platform == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
         )
     }
 
@@ -265,6 +459,16 @@ class TrackServiceTest {
             "trackClientTestValidUserAgentNullOS(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentNullOS(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == user.clientBrowserInfo() &&
+                    "unknown" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
+        )
     }
 
     @Test
@@ -284,6 +488,16 @@ class TrackServiceTest {
         assertTrue(
             "trackClientTestValidUserAgentNullOSVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
+        )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentNullOSVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == user.clientBrowserInfo() &&
+                    platform == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
         )
     }
 
@@ -305,6 +519,16 @@ class TrackServiceTest {
             "trackClientTestValidUserAgentNullBrowser(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentNullBrowser(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "unknown" == user.clientBrowserInfo() &&
+                    "$platform $platformVersion" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
+        )
     }
 
     @Test
@@ -325,8 +549,17 @@ class TrackServiceTest {
             "trackClientTestValidUserAgentNullBrowserVersion(): should have one item in database after test",
             trackService.queryDatabase().size == 1
         )
-    }
 
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentNullBrowserVersion(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    browser == user.clientBrowserInfo() &&
+                    "$platform $platformVersion" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
+        )
+    }
 
 
     // test should not pass because there is no data cleaning/sanitization right now
@@ -375,6 +608,16 @@ class TrackServiceTest {
         assertTrue(
             "trackClientTestMissingUserAgent(): should have one item in database after test",
             trackService.queryDatabase().size == 1
+        )
+
+        val user = trackService.queryDatabase()[0]
+
+        assertTrue(
+            "trackClientTestValidUserAgentMissingUserAgent(): data entered should match on query",
+            ipv4 == user.clientIpv4Address() &&
+                    "unknown" == user.clientBrowserInfo() &&
+                    "unknown" == user.clientOperatingSystem() &&
+                    requestURI == user.clientConnectionRequestedPage()
         )
     }
 
@@ -464,5 +707,23 @@ class TrackServiceTest {
     fun trackClientTestSQLInjectionUserAgent() {
         //NYI
     }
+
+    /*******************************************************/
+    /*******************************************************/
+    /* THESE TESTS ALL PERTAIN TO THE queryDatabase METHOD */
+    /*******************************************************/
+    /*******************************************************/
+
+    /*************************************/
+    /* Happy Path Tests (expected input) */
+    /*************************************/
+
+    /***********************************************/
+    /* Crappy Path Tests (unexpected or bad input) */
+    /***********************************************/
+
+    /******************************************************/
+    /* Crazy Path Tests (wildly wrong or malicious input) */
+    /******************************************************/
 
 }
