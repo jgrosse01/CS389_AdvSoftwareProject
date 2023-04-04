@@ -8,7 +8,7 @@
         <td>Requested Page</td>
         <td>Timestamp</td>
     </tr>
-    <tr th:each="trackedUser, iStat : ${trackedUsers}"
+    <tr class="bso-table-row" th:each="trackedUser, iStat : ${trackedUsers}"
         th:style="${iStat.odd}? 'background-color: #ccc;' : 'background-color: #444; color: #eee;'">
         <td th:text="${trackedUser.clientIpv4Address}"></td>
         <td th:text="${trackedUser.clientOperatingSystem}"></td>

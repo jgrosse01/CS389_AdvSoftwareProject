@@ -48,6 +48,10 @@ a.nav-link:hover {
     padding-right: 1em;
 }
 
+.bso-table-row td {
+    text-align: center;
+}
+
 .nav-brand {
     font-size: 1.2em;
     white-space: nowrap;
