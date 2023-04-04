@@ -1,6 +1,6 @@
-package edu.carroll.cs389.service.tracker
+package edu.carroll.cs389.service.tracker.trackservice
 
-import edu.carroll.cs389.jpa.repo.TrackerRepo
+import edu.carroll.cs389.service.tracker.TrackService
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,15 +12,10 @@ import org.springframework.test.util.AssertionErrors.assertTrue
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class TrackServiceTest {
+class TrackServiceTrackClientTest {
 
     @Autowired
     private lateinit var trackService: TrackService
-
-    // trackerRepo needed to directly save to database in order to ensure
-    // timestamp equality for TrackedUser comparison
-    @Autowired
-    private lateinit var trackerRepo: TrackerRepo
 
     /**********************************/
     /* General DB Persistence Testing */
