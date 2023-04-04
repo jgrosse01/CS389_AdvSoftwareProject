@@ -48,10 +48,10 @@ open class TrackedUser() : Serializable {
     private lateinit var clientIpv4Address: String
 
     @Column(name = "operating_system")
-    private lateinit var clientOperatingSystem: String
+    private var clientOperatingSystem: String = "unknown"
 
     @Column(name = "browser")
-    private lateinit var clientBrowserInfo: String
+    private var clientBrowserInfo: String = "unknown"
 
     @Column(name = "timestamp", nullable = false)
     private lateinit var clientConnectionAttemptTimestamp: Timestamp
