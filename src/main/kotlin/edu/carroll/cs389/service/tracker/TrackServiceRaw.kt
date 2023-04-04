@@ -54,12 +54,13 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
 
         // if we have a browser and corresponding version
         var saveBrowser: String? = null
-        if (browser != null && (browserMajorVersion != null && browserMajorVersion != "Unknown" && browserMajorVersion != "")) {
+        if (browser != null && browser != "" && browser != "Unknown" &&
+                (browserMajorVersion != null && browserMajorVersion != "Unknown" && browserMajorVersion != "")) {
             log.debug("trackClient: $ipv4 successfully acquired browser info")
             saveBrowser = "$browser $browserMajorVersion"
         }
         // if we have a browser but not a corresponding version
-        else if (browser != null && (browserMajorVersion == null || browserMajorVersion == "Unknown" || browserMajorVersion == "")) {
+        else if (browser != null && browser != "" && browser != "Unknown") {
             log.warn("trackClient: $ipv4 client browser missing version tag")
             saveBrowser = browser
         } else {
@@ -69,12 +70,13 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
         // null-check and format operating system string (java library has potential to return null)
         var os: String? = null
         // if we have a platform and corresponding version
-        if (platform != null && (platformVersion != null && platformVersion != "Unknown" && platformVersion != "")) {
+        if (platform != null && platform != "" && platform != "Unknown" &&
+            (platformVersion != null && platformVersion != "Unknown" && platformVersion != "")) {
             log.debug("trackClient: $ipv4 successfully acquired OS info")
             os = "$platform $platformVersion"
         }
         // if we have a platform but not a corresponding version
-        else if (platform != null && (platformVersion == null || platformVersion == "Unknown" || platformVersion == "")) {
+        else if (platform != null && platform != "" && platform != "Unknown") {
             log.warn("trackClient: $ipv4 client OS missing version tag")
             os = platform
         } else {
