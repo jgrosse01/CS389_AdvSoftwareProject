@@ -81,6 +81,8 @@ open class TrackedUser() : Serializable {
         }
         val trackedUser = other as TrackedUser
         return clientIpv4Address == trackedUser.clientIpv4Address &&
+                clientBrowserInfo == trackedUser.clientBrowserInfo &&
+                clientOperatingSystem == trackedUser.clientOperatingSystem &&
                 clientConnectionAttemptTimestamp == trackedUser.clientConnectionAttemptTimestamp &&
                 clientConnectionRequestedPage == trackedUser.clientConnectionRequestedPage
     }
