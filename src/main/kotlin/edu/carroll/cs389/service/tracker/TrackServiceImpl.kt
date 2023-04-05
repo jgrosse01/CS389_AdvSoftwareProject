@@ -16,9 +16,9 @@ import org.springframework.stereotype.Service
  * @see edu.carroll.cs389.jpa.repo.TrackerRepo
  */
 @Service
-class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
+class TrackServiceImpl(private val trackerRepo: TrackerRepo): TrackService {
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(TrackServiceRaw::class.java)
+        private val log: Logger = LoggerFactory.getLogger(TrackServiceImpl::class.java)
     }
 
     /**
