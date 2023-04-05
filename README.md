@@ -19,6 +19,8 @@ You are welcome to download the project, build it, and set up the database yours
 
 5. The webapp can be accessed via the address "http://localhost/".
 
+---
+
 
 If you would prefer the difficult way either to learn more or to customize to your liking, here are the steps, these instructions will use docker and postgresql, but can be adapted for any method of deploying a database that you choose:
 
