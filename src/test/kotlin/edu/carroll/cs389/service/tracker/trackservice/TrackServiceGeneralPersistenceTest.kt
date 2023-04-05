@@ -14,14 +14,14 @@ class TrackServiceGeneralPersistenceTest {
     @Autowired
     private lateinit var trackService: TrackService
 
-    /**********************************/
-    /* General DB Persistence Testing */
-    /**********************************/
+    /*****************************************/
+    /* General datastore Persistence Testing */
+    /*****************************************/
 
     @Test
-    fun dbIsEmptyWithoutInsertTest() {
+    fun datastoreIsEmptyWithoutInsertTest() {
         assertTrue(
-            "testDbIsEmptyWithoutInsert(): test db (newly instantiated and cleaned after every test" +
+            "datastoreIsEmptyWithoutInsertTest(): test datastore (newly instantiated and cleaned after every test" +
                     " should be empty without inserting data",
             trackService.query().isEmpty()
         )
