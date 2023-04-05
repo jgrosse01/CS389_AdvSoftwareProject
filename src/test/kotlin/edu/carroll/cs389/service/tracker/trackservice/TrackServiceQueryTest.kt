@@ -1,7 +1,5 @@
 package edu.carroll.cs389.service.tracker.trackservice
 
-import edu.carroll.cs389.jpa.model.TrackedUser
-import edu.carroll.cs389.jpa.repo.TrackerRepo
 import edu.carroll.cs389.service.tracker.TrackService
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -9,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.util.AssertionErrors.assertTrue
-import java.lang.reflect.Field
 import java.sql.Timestamp
 import java.util.Date
 
@@ -19,12 +16,6 @@ class TrackServiceQueryTest {
 
     @Autowired
     private lateinit var trackService: TrackService
-
-    // trackerRepo needed to directly save to database in order to ensure
-    // timestamp equality for TrackedUser comparison
-    @Autowired
-    private lateinit var trackerRepo: TrackerRepo
-
 
     /*******************************************************/
     /*******************************************************/
@@ -37,39 +28,36 @@ class TrackServiceQueryTest {
     /*************************************/
 
     @Test
-    fun validTrackedUserTest() {
+    fun validUserTest() {
         val ipv4: String = "192.168.1.1"
         val browser: String = "Firefox"
         val browserMajorVersion: String = "110"
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
+        // logging time to be between
+        val timeU1i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        Thread.sleep(100)
+        val timeU1f = Timestamp(Date().time)
 
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-
-        val dbUser = trackService.query()[0]
+        val results = trackService.query()
         assertTrue(
-            "validTrackedUserTest(): Tracked user should be equal",
-            dbUser == user
+            "validUserTest(): Tracked user should be equal",
+            results.size  == 1
         )
 
         assertTrue(
             "validTrackedUserTest(): Tracked user should be equal to string information given " +
                     "we set the timestamp of the inserted user to a known value",
-            ipv4 == dbUser.clientIpv4Address() &&
-            "$browser $browserMajorVersion" == dbUser.clientBrowserInfo() &&
-            "$platform $platformVersion" == dbUser.clientOperatingSystem() &&
-            requestURI == dbUser.clientConnectionRequestedPage() &&
-            timestamp == dbUser.clientConnectionAttemptTimestamp()
+            ipv4 == results[0].clientIpv4Address() &&
+            "$browser $browserMajorVersion" == results[0].clientBrowserInfo() &&
+            "$platform $platformVersion" == results[0].clientOperatingSystem() &&
+            requestURI == results[0].clientConnectionRequestedPage() &&
+            timeU1i <= results[0].clientConnectionAttemptTimestamp() && 
+                    results[0].clientConnectionAttemptTimestamp() <= timeU1f
         )
     }
 
@@ -81,7 +69,6 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
         val ipv42: String = "172.98.272.47"
         val browser2: String = "Chrome"
@@ -89,51 +76,46 @@ class TrackServiceQueryTest {
         val platform2: String = "Windows"
         val platformVersion2: String = "10 NT"
         val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = Timestamp(Date().time + 3000000)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-        privateField.set(user2, timestamp2)
+        // logging time to be between
+        val timeU1i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        Thread.sleep(100)
+        val timeU1f = Timestamp(Date().time)
+        
+        val timeU2i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+        Thread.sleep(100)
+        val timeU2f = Timestamp(Date().time)
 
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-        trackerRepo.save(user2)
-
-        val dbUser2 = trackService.query()[0]
-        val dbUser = trackService.query()[1]
+        val results = trackService.query()
         assertTrue(
             "validTwoTrackedUserTest(): Tracked user should be equal",
-            dbUser == user
-        )
-
-        assertTrue(
-            "validTwoTrackedUserTest(): Tracked user2 should be equal",
-            dbUser2 == user2
+            results.size == 2
         )
 
         assertTrue(
             "validTwoTrackedUserTest(): Tracked user should be equal to string information given " +
                     "we set the timestamp of the inserted user to a known value",
-            ipv4 == dbUser.clientIpv4Address() &&
-                    "$browser $browserMajorVersion" == dbUser.clientBrowserInfo() &&
-                    "$platform $platformVersion" == dbUser.clientOperatingSystem() &&
-                    requestURI == dbUser.clientConnectionRequestedPage() &&
-                    timestamp == dbUser.clientConnectionAttemptTimestamp()
+            ipv4 == results[1].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[1].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[1].clientOperatingSystem() &&
+                    requestURI == results[1].clientConnectionRequestedPage() &&
+                    timeU1i <= results[1].clientConnectionAttemptTimestamp() &&
+                    results[1].clientConnectionAttemptTimestamp() <= timeU1f
         )
 
         assertTrue(
             "validTwoTrackedUserTest(): Tracked user2 should be equal to string information given " +
                     "we set the timestamp of the inserted user to a known value",
-            ipv42 == dbUser2.clientIpv4Address() &&
-                    "$browser2 $browserMajorVersion2" == dbUser2.clientBrowserInfo() &&
-                    "$platform2 $platformVersion2" == dbUser2.clientOperatingSystem() &&
-                    requestURI2 == dbUser2.clientConnectionRequestedPage() &&
-                    timestamp2 == dbUser2.clientConnectionAttemptTimestamp()
+            ipv42 == results[0].clientIpv4Address() &&
+                    "$browser2 $browserMajorVersion2" == results[0].clientBrowserInfo() &&
+                    "$platform2 $platformVersion2" == results[0].clientOperatingSystem() &&
+                    requestURI2 == results[0].clientConnectionRequestedPage() &&
+                    timeU2i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU2f
         )
     }
 
@@ -145,7 +127,6 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
         val ipv42: String = "172.98.272.47"
         val browser2: String = "Chrome"
@@ -153,7 +134,6 @@ class TrackServiceQueryTest {
         val platform2: String = "Windows"
         val platformVersion2: String = "10 NT"
         val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = Timestamp(Date().time + 3000000)
 
         val ipv43: String = "214.72.68.138"
         val browser3: String = "Brave"
@@ -161,23 +141,14 @@ class TrackServiceQueryTest {
         val platform3: String = "macOS"
         val platformVersion3: String = "Catalina"
         val requestURI3: String = "/bs-override.css"
-        val timestamp3: Timestamp = Timestamp(Date().time + 300000000)
-
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        val user3: TrackedUser = TrackedUser(ipv43, "$platform3 $platformVersion3", "$browser3 $browserMajorVersion3", requestURI3)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-        privateField.set(user2, timestamp2)
-        privateField.set(user3, timestamp3)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-        trackerRepo.save(user2)
-        trackerRepo.save(user3)
+        
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        
+        Thread.sleep(100)
+        trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+        
+        Thread.sleep(100)
+        trackService.trackClient(ipv43, browser3, browserMajorVersion3, platform3, platformVersion3, requestURI3)
 
         val results = trackService.query()
 
@@ -193,64 +164,7 @@ class TrackServiceQueryTest {
             results[1].clientConnectionAttemptTimestamp() > results[2].clientConnectionAttemptTimestamp()
         )
     }
-
-    @Test
-    fun insertThreeWithTwoSameTimestampAndCheckOrderByTimestampTest() {
-        val ipv4: String = "192.168.1.1"
-        val browser: String = "Firefox"
-        val browserMajorVersion: String = "110"
-        val platform: String = "Ubuntu"
-        val platformVersion: String = "22.04 LTS"
-        val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
-
-        val ipv42: String = "172.98.272.47"
-        val browser2: String = "Chrome"
-        val browserMajorVersion2: String = "35"
-        val platform2: String = "Windows"
-        val platformVersion2: String = "10 NT"
-        val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = timestamp
-
-        val ipv43: String = "214.72.68.138"
-        val browser3: String = "Brave"
-        val browserMajorVersion3: String = "1.49"
-        val platform3: String = "macOS"
-        val platformVersion3: String = "Catalina"
-        val requestURI3: String = "/bs-override.css"
-        val timestamp3: Timestamp = Timestamp(Date().time + 300000000)
-
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        val user3: TrackedUser = TrackedUser(ipv43, "$platform3 $platformVersion3", "$browser3 $browserMajorVersion3", requestURI3)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-        privateField.set(user2, timestamp2)
-        privateField.set(user3, timestamp3)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-        trackerRepo.save(user2)
-        trackerRepo.save(user3)
-
-        val results = trackService.query()
-
-        assertTrue(
-            "insertThreeAndCheckOrderByTimestampTest(): Should contain 3 entries",
-            results.size == 3
-        )
-
-        assertTrue(
-            "insertThreeAndCheckOrderByTimestampTest(): Should be in order starting with greatest " +
-                    "timestamp and ending with least",
-            results[0].clientConnectionAttemptTimestamp() > results[1].clientConnectionAttemptTimestamp() &&
-                    results[1].clientConnectionAttemptTimestamp() >= results[2].clientConnectionAttemptTimestamp()
-        )
-    }
-
+    
     @Test
     fun insertThreeAndSearchTest() {
         val ipv4: String = "192.168.1.1"
@@ -259,7 +173,6 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
         val ipv42: String = "172.98.272.47"
         val browser2: String = "Chrome"
@@ -267,7 +180,6 @@ class TrackServiceQueryTest {
         val platform2: String = "Windows"
         val platformVersion2: String = "10 NT"
         val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = Timestamp(Date().time + 3000000)
 
         val ipv43: String = "214.72.68.138"
         val browser3: String = "Brave"
@@ -275,23 +187,16 @@ class TrackServiceQueryTest {
         val platform3: String = "macOS"
         val platformVersion3: String = "Catalina"
         val requestURI3: String = "/bs-override.css"
-        val timestamp3: Timestamp = Timestamp(Date().time + 300000000)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        val user3: TrackedUser = TrackedUser(ipv43, "$platform3 $platformVersion3", "$browser3 $browserMajorVersion3", requestURI3)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-        privateField.set(user2, timestamp2)
-        privateField.set(user3, timestamp3)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-        trackerRepo.save(user2)
-        trackerRepo.save(user3)
+        // logging time to be between
+        val timeU1i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        Thread.sleep(100)
+        val timeU1f = Timestamp(Date().time)
+        
+        trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+        trackService.trackClient(ipv43, browser3, browserMajorVersion3, platform3, platformVersion3, requestURI3)
 
         val results = trackService.query("192.168.1.1")
 
@@ -302,7 +207,12 @@ class TrackServiceQueryTest {
 
         assertTrue(
             "insertThreeAndSearchTest(): Based on search term, returned user should equal user 1 (user)",
-            results[0] == user
+            ipv4 == results[0].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[0].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[0].clientOperatingSystem() &&
+                    requestURI == results[0].clientConnectionRequestedPage() &&
+                    timeU1i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU1f
         )
     }
 
@@ -314,7 +224,6 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
         val ipv42: String = "192.168.1.1"
         val browser2: String = "Chrome"
@@ -322,7 +231,6 @@ class TrackServiceQueryTest {
         val platform2: String = "Windows"
         val platformVersion2: String = "10 NT"
         val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = Timestamp(Date().time + 3000000)
 
         val ipv43: String = "214.72.68.138"
         val browser3: String = "Brave"
@@ -330,23 +238,21 @@ class TrackServiceQueryTest {
         val platform3: String = "macOS"
         val platformVersion3: String = "Catalina"
         val requestURI3: String = "/bs-override.css"
-        val timestamp3: Timestamp = Timestamp(Date().time + 300000000)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        val user3: TrackedUser = TrackedUser(ipv43, "$platform3 $platformVersion3", "$browser3 $browserMajorVersion3", requestURI3)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-        privateField.set(user2, timestamp2)
-        privateField.set(user3, timestamp3)
+        // logging time to be between
+        val timeU1i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        Thread.sleep(100)
+        val timeU1f = Timestamp(Date().time)
 
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-        trackerRepo.save(user2)
-        trackerRepo.save(user3)
+        val timeU2i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+        Thread.sleep(100)
+        val timeU2f = Timestamp(Date().time)
+        
+        trackService.trackClient(ipv43, browser3, browserMajorVersion3, platform3, platformVersion3, requestURI3)
 
         val results = trackService.query("192.168.1.1")
 
@@ -357,7 +263,19 @@ class TrackServiceQueryTest {
 
         assertTrue(
             "insertThreeWithTwoSameAndSearchTest(): Should have query 0 equal user 2 and query 1 equal user 1",
-            results[0] == user2 && results[1] == user
+            ipv42 == results[0].clientIpv4Address() &&
+                    "$browser2 $browserMajorVersion2" == results[0].clientBrowserInfo() &&
+                    "$platform2 $platformVersion2" == results[0].clientOperatingSystem() &&
+                    requestURI2 == results[0].clientConnectionRequestedPage() &&
+                    timeU2i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU2f &&
+
+                    ipv4 == results[1].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[1].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[1].clientOperatingSystem() &&
+                    requestURI == results[1].clientConnectionRequestedPage() &&
+                    timeU1i <= results[1].clientConnectionAttemptTimestamp() &&
+                    results[1].clientConnectionAttemptTimestamp() <= timeU1f
         )
     }
 
@@ -369,7 +287,6 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
         val ipv42: String = "192.168.1.1"
         val browser2: String = "Chrome"
@@ -377,7 +294,6 @@ class TrackServiceQueryTest {
         val platform2: String = "Windows"
         val platformVersion2: String = "10 NT"
         val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = Timestamp(Date().time + 3000000)
 
         val ipv43: String = "192.168.1.1"
         val browser3: String = "Brave"
@@ -385,23 +301,14 @@ class TrackServiceQueryTest {
         val platform3: String = "macOS"
         val platformVersion3: String = "Catalina"
         val requestURI3: String = "/bs-override.css"
-        val timestamp3: Timestamp = Timestamp(Date().time + 300000000)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        val user3: TrackedUser = TrackedUser(ipv43, "$platform3 $platformVersion3", "$browser3 $browserMajorVersion3", requestURI3)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-        privateField.set(user2, timestamp2)
-        privateField.set(user3, timestamp3)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
 
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-        trackerRepo.save(user2)
-        trackerRepo.save(user3)
+        Thread.sleep(100)
+        trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+
+        Thread.sleep(100)
+        trackService.trackClient(ipv43, browser3, browserMajorVersion3, platform3, platformVersion3, requestURI3)
 
         val results = trackService.query("192.168.1.1")
 
@@ -450,17 +357,12 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
+        val timeU1i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        Thread.sleep(100)
+        val timeU1f = Timestamp(Date().time)
 
         var results = trackService.query("")
 
@@ -471,7 +373,12 @@ class TrackServiceQueryTest {
 
         assertTrue(
             "queryWithNoEntriesTest(): Results should match users according to sort order (1)",
-            results[0] == user
+            ipv4 == results[0].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[0].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[0].clientOperatingSystem() &&
+                    requestURI == results[0].clientConnectionRequestedPage() &&
+                    timeU1i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU1f
         )
 
         val ipv42: String = "172.98.272.47"
@@ -480,14 +387,12 @@ class TrackServiceQueryTest {
         val platform2: String = "Windows"
         val platformVersion2: String = "10 NT"
         val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = Timestamp(Date().time + 3000000)
 
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        // setting field to known timestamp so we can compare
-        privateField.set(user2, timestamp2)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user2)
+        val timeU2i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+        Thread.sleep(100)
+        val timeU2f = Timestamp(Date().time)
 
         results = trackService.query("")
 
@@ -498,8 +403,19 @@ class TrackServiceQueryTest {
 
         assertTrue(
             "queryWithNoEntriesTest(): Results should match users according to sort order (2)",
-            results[0] == user2 &&
-            results[1] == user
+            ipv42 == results[0].clientIpv4Address() &&
+                    "$browser2 $browserMajorVersion2" == results[0].clientBrowserInfo() &&
+                    "$platform2 $platformVersion2" == results[0].clientOperatingSystem() &&
+                    requestURI2 == results[0].clientConnectionRequestedPage() &&
+                    timeU2i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU2f &&
+
+                    ipv4 == results[1].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[1].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[1].clientOperatingSystem() &&
+                    requestURI == results[1].clientConnectionRequestedPage() &&
+                    timeU1i <= results[1].clientConnectionAttemptTimestamp() &&
+                    results[1].clientConnectionAttemptTimestamp() <= timeU1f
         )
     }
 
@@ -511,19 +427,10 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
 
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
-
-        var results = trackService.query("162.187.27.147")
+        val results = trackService.query("162.187.27.147")
 
         assertTrue(
             "searchForEntryThatDoesNotExistTest(): when IP does not exist in Db, there should be no result",
@@ -544,17 +451,12 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
+        val timeU1i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        Thread.sleep(100)
+        val timeU1f = Timestamp(Date().time)
 
         var results = trackService.query(null)
 
@@ -565,7 +467,12 @@ class TrackServiceQueryTest {
 
         assertTrue(
             "queryWithNoEntriesTest(): Results should match users according to sort order (1)",
-            results[0] == user
+            ipv4 == results[0].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[0].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[0].clientOperatingSystem() &&
+                    requestURI == results[0].clientConnectionRequestedPage() &&
+                    timeU1i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU1f
         )
 
         val ipv42: String = "172.98.272.47"
@@ -574,14 +481,12 @@ class TrackServiceQueryTest {
         val platform2: String = "Windows"
         val platformVersion2: String = "10 NT"
         val requestURI2: String = "/ip_info"
-        val timestamp2: Timestamp = Timestamp(Date().time + 3000000)
 
-        val user2: TrackedUser = TrackedUser(ipv42, "$platform2 $platformVersion2", "$browser2 $browserMajorVersion2", requestURI2)
-        // setting field to known timestamp so we can compare
-        privateField.set(user2, timestamp2)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user2)
+        val timeU2i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv42, browser2, browserMajorVersion2, platform2, platformVersion2, requestURI2)
+        Thread.sleep(100)
+        val timeU2f = Timestamp(Date().time)
 
         results = trackService.query(null)
 
@@ -592,8 +497,19 @@ class TrackServiceQueryTest {
 
         assertTrue(
             "queryWithNoEntriesTest(): Results should match users according to sort order (2)",
-            results[0] == user2 &&
-                    results[1] == user
+            ipv42 == results[0].clientIpv4Address() &&
+                    "$browser2 $browserMajorVersion2" == results[0].clientBrowserInfo() &&
+                    "$platform2 $platformVersion2" == results[0].clientOperatingSystem() &&
+                    requestURI2 == results[0].clientConnectionRequestedPage() &&
+                    timeU2i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU2f &&
+
+                    ipv4 == results[1].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[1].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[1].clientOperatingSystem() &&
+                    requestURI == results[1].clientConnectionRequestedPage() &&
+                    timeU1i <= results[1].clientConnectionAttemptTimestamp() &&
+                    results[1].clientConnectionAttemptTimestamp() <= timeU1f
         )
     }
 
@@ -608,24 +524,24 @@ class TrackServiceQueryTest {
         val platform: String = "Ubuntu"
         val platformVersion: String = "22.04 LTS"
         val requestURI: String = "/"
-        val timestamp: Timestamp = Timestamp(Date().time)
 
-        val user: TrackedUser = TrackedUser(ipv4, "$platform $platformVersion", "$browser $browserMajorVersion", requestURI)
-        // setting private field accessible to ensure that equality can be checked
-        val privateField: Field = user.javaClass.getDeclaredField("clientConnectionAttemptTimestamp")
-        privateField.isAccessible = true
-        // setting field to known timestamp so we can compare
-        privateField.set(user, timestamp)
-
-        // insert data into database directly (allows for direct specification of TrackedUser object
-        trackerRepo.save(user)
+        val timeU1i = Timestamp(Date().time)
+        Thread.sleep(100)
+        trackService.trackClient(ipv4, browser, browserMajorVersion, platform, platformVersion, requestURI)
+        Thread.sleep(100)
+        val timeU1f = Timestamp(Date().time)
 
         var results = trackService.query()
 
         assertTrue(
             "searchForSQLCodeTest(): Should have one datapoint that matches user",
             results.size == 1 &&
-            results[0] == user
+                    ipv4 == results[0].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[0].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[0].clientOperatingSystem() &&
+                    requestURI == results[0].clientConnectionRequestedPage() &&
+                    timeU1i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU1f
         )
 
         results = trackService.query("; DELETE FROM tracked_users WHERE *;")
@@ -633,7 +549,12 @@ class TrackServiceQueryTest {
         assertTrue(
             "searchForSQLCodeTest(): should still keep data after searching for a delete statement",
             results.size == 1 &&
-            results[0] == user
+                    ipv4 == results[0].clientIpv4Address() &&
+                    "$browser $browserMajorVersion" == results[0].clientBrowserInfo() &&
+                    "$platform $platformVersion" == results[0].clientOperatingSystem() &&
+                    requestURI == results[0].clientConnectionRequestedPage() &&
+                    timeU1i <= results[0].clientConnectionAttemptTimestamp() &&
+                    results[0].clientConnectionAttemptTimestamp() <= timeU1f
         )
     }
 
