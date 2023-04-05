@@ -29,7 +29,7 @@ import org.springframework.web.servlet.HandlerInterceptor
  */
 @Component
 class TrackerInterceptor(
-    @Qualifier("trackServiceRaw") private val trackerService: TrackService,
+    private val trackerService: TrackService,
     private val trackerInterceptorProperties: TrackerInterceptorProperties
 ) : HandlerInterceptor {
     companion object {
