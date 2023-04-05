@@ -2,12 +2,14 @@ package edu.carroll.cs389.jpa.repo
 
 import edu.carroll.cs389.jpa.model.TrackedUser
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
 /**
  * Extension of JpaRepository interface
  *
  * Allows for searching by fields of this application's database tables.
  */
+@Repository
 interface TrackerRepo : JpaRepository<TrackedUser, Int> {
     /**
      * JPA Magic to define a function which will search the attached database by ipv4_address
