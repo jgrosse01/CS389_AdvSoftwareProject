@@ -15,7 +15,7 @@ import java.util.Date
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class TrackServiceQueryDBTest {
+class TrackServiceQueryTest {
 
     @Autowired
     private lateinit var trackService: TrackService
@@ -56,7 +56,7 @@ class TrackServiceQueryDBTest {
         // insert data into database directly (allows for direct specification of TrackedUser object
         trackerRepo.save(user)
 
-        val dbUser = trackService.queryDatabase()[0]
+        val dbUser = trackService.query()[0]
         assertTrue(
             "validTrackedUserTest(): Tracked user should be equal",
             dbUser == user
@@ -104,8 +104,8 @@ class TrackServiceQueryDBTest {
         trackerRepo.save(user)
         trackerRepo.save(user2)
 
-        val dbUser2 = trackService.queryDatabase()[0]
-        val dbUser = trackService.queryDatabase()[1]
+        val dbUser2 = trackService.query()[0]
+        val dbUser = trackService.query()[1]
         assertTrue(
             "validTwoTrackedUserTest(): Tracked user should be equal",
             dbUser == user
@@ -179,7 +179,7 @@ class TrackServiceQueryDBTest {
         trackerRepo.save(user2)
         trackerRepo.save(user3)
 
-        val results = trackService.queryDatabase()
+        val results = trackService.query()
 
         assertTrue(
             "insertThreeAndCheckOrderByTimestampTest(): Should contain 3 entries",
@@ -236,7 +236,7 @@ class TrackServiceQueryDBTest {
         trackerRepo.save(user2)
         trackerRepo.save(user3)
 
-        val results = trackService.queryDatabase()
+        val results = trackService.query()
 
         assertTrue(
             "insertThreeAndCheckOrderByTimestampTest(): Should contain 3 entries",
@@ -293,7 +293,7 @@ class TrackServiceQueryDBTest {
         trackerRepo.save(user2)
         trackerRepo.save(user3)
 
-        val results = trackService.queryDatabase("192.168.1.1")
+        val results = trackService.query("192.168.1.1")
 
         assertTrue(
             "insertThreeAndSearchTest(): Based on search term, should only have one entry that is returned",
@@ -348,7 +348,7 @@ class TrackServiceQueryDBTest {
         trackerRepo.save(user2)
         trackerRepo.save(user3)
 
-        val results = trackService.queryDatabase("192.168.1.1")
+        val results = trackService.query("192.168.1.1")
 
         assertTrue(
             "insertThreeWithTwoSameAndSearchTest(): Should have query size of 2 because 2 have same IP",
@@ -403,7 +403,7 @@ class TrackServiceQueryDBTest {
         trackerRepo.save(user2)
         trackerRepo.save(user3)
 
-        val results = trackService.queryDatabase("192.168.1.1")
+        val results = trackService.query("192.168.1.1")
 
         assertTrue(
             "insertThreeOfSameThenSearchAndCheckOrderByTimestampTest(): Should contain 3 entries",
@@ -424,7 +424,7 @@ class TrackServiceQueryDBTest {
 
     @Test
     fun queryWithNoEntriesTest() {
-        val results = trackService.queryDatabase()
+        val results = trackService.query()
 
         assertTrue(
             "queryWithNoEntriesTest(): Should have length 0 in results",
@@ -434,7 +434,7 @@ class TrackServiceQueryDBTest {
 
     @Test
     fun searchWithNoEntriesTest() {
-        val results = trackService.queryDatabase("186.128.74.129")
+        val results = trackService.query("186.128.74.129")
 
         assertTrue(
             "searchWithNoEntriesTest(): Should have length 0 in results",
@@ -462,7 +462,7 @@ class TrackServiceQueryDBTest {
         // insert data into database directly (allows for direct specification of TrackedUser object
         trackerRepo.save(user)
 
-        var results = trackService.queryDatabase("")
+        var results = trackService.query("")
 
         assertTrue(
             "queryWithNoEntriesTest(): Should have all results for empty search (1)",
@@ -489,7 +489,7 @@ class TrackServiceQueryDBTest {
         // insert data into database directly (allows for direct specification of TrackedUser object
         trackerRepo.save(user2)
 
-        results = trackService.queryDatabase("")
+        results = trackService.query("")
 
         assertTrue(
             "queryWithNoEntriesTest(): Should have all results for empty search (2)",
@@ -523,7 +523,7 @@ class TrackServiceQueryDBTest {
         // insert data into database directly (allows for direct specification of TrackedUser object
         trackerRepo.save(user)
 
-        var results = trackService.queryDatabase("162.187.27.147")
+        var results = trackService.query("162.187.27.147")
 
         assertTrue(
             "searchForEntryThatDoesNotExistTest(): when IP does not exist in Db, there should be no result",
@@ -556,7 +556,7 @@ class TrackServiceQueryDBTest {
         // insert data into database directly (allows for direct specification of TrackedUser object
         trackerRepo.save(user)
 
-        var results = trackService.queryDatabase(null)
+        var results = trackService.query(null)
 
         assertTrue(
             "queryWithNoEntriesTest(): Should have all results for empty search (1)",
@@ -583,7 +583,7 @@ class TrackServiceQueryDBTest {
         // insert data into database directly (allows for direct specification of TrackedUser object
         trackerRepo.save(user2)
 
-        results = trackService.queryDatabase(null)
+        results = trackService.query(null)
 
         assertTrue(
             "queryWithNoEntriesTest(): Should have all results for empty search (2)",
@@ -620,7 +620,7 @@ class TrackServiceQueryDBTest {
         // insert data into database directly (allows for direct specification of TrackedUser object
         trackerRepo.save(user)
 
-        var results = trackService.queryDatabase()
+        var results = trackService.query()
 
         assertTrue(
             "searchForSQLCodeTest(): Should have one datapoint that matches user",
@@ -628,7 +628,7 @@ class TrackServiceQueryDBTest {
             results[0] == user
         )
 
-        results = trackService.queryDatabase("; DELETE FROM tracked_users WHERE *;")
+        results = trackService.query("; DELETE FROM tracked_users WHERE *;")
 
         assertTrue(
             "searchForSQLCodeTest(): should still keep data after searching for a delete statement",

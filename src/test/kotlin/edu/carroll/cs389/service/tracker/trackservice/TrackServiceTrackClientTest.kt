@@ -43,10 +43,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgent(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgent(): data entered should match on query",
@@ -73,10 +73,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserVersion(): data entered should match on query",
@@ -103,10 +103,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOSVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOSVersion(): data entered should match on query",
@@ -133,10 +133,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowser(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowser(): data entered should match on query",
@@ -163,10 +163,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOS(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOS(): data entered should match on query",
@@ -193,10 +193,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserAndVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserAndVersion(): data entered should match on query",
@@ -223,10 +223,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOSAndVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOSAndVersion(): data entered should match on query",
@@ -253,10 +253,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOSAndVersionAndBrowserVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingOSAndVersionAndBrowserVersion(): data entered should match on query",
@@ -283,10 +283,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserAndVersionAndOSVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingBrowserAndVersionAndOSVersion(): data entered should match on query",
@@ -313,7 +313,7 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingIPV4(): should have zero items in database after test",
-            trackService.queryDatabase().isEmpty()
+            trackService.query().isEmpty()
         )
     }
 
@@ -333,7 +333,7 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgent()NullIPV4: should have zero items in database after test",
-            trackService.queryDatabase().isEmpty()
+            trackService.query().isEmpty()
         )
     }
 
@@ -357,10 +357,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentNullOS(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentNullOS(): data entered should match on query",
@@ -387,10 +387,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentNullOSVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentNullOSVersion(): data entered should match on query",
@@ -417,10 +417,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentNullBrowser(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentNullBrowser(): data entered should match on query",
@@ -447,10 +447,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentNullBrowserVersion(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentNullBrowserVersion(): data entered should match on query",
@@ -482,7 +482,7 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentGenericInfo(): should have zero items in database after test",
-            trackService.queryDatabase().isEmpty()
+            trackService.query().isEmpty()
         )
     }
 
@@ -507,10 +507,10 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestMissingUserAgent(): should have one item in database after test",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "trackClientTestValidUserAgentMissingUserAgent(): data entered should match on query",
@@ -537,7 +537,7 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentMissingURI(): should have no items in database after test",
-            trackService.queryDatabase().isEmpty()
+            trackService.query().isEmpty()
         )
     }
 
@@ -557,7 +557,7 @@ class TrackServiceTrackClientTest {
 
         assertTrue(
             "trackClientTestValidUserAgentNullURI(): should have no items in database after test",
-            trackService.queryDatabase().isEmpty()
+            trackService.query().isEmpty()
         )
     }
 

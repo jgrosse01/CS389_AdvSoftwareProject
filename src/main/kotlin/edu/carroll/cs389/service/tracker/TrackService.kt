@@ -41,5 +41,5 @@ interface TrackService {
      *
      * @return A list of all entries in the database matching the search term
      */
-    fun queryDatabase(ipv4: String? = "default"): List<TrackedUser>
+    fun query(ipv4: String? = "default"): List<TrackedUser>
 }

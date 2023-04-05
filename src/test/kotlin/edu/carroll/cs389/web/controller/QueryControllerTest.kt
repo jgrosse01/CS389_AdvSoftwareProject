@@ -11,9 +11,9 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 @Disabled
-@SpringBootTest(classes = [DbQueryController::class])
+@SpringBootTest(classes = [QueryController::class])
 @AutoConfigureMockMvc
-class DbQueryControllerTest {
+class QueryControllerTest {
 
     @Autowired
     private lateinit var dbMvc: MockMvc

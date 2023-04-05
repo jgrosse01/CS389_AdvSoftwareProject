@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping
  * @see edu.carroll.cs389.service.tracker.TrackService
  */
 @Controller
-class DbQueryController(private val trackService: TrackService) {
+class QueryController(private val trackService: TrackService) {
     companion object{
-        val log: Logger = LoggerFactory.getLogger(DbQueryController::class.java)
+        val log: Logger = LoggerFactory.getLogger(QueryController::class.java)
     }
 
     /**
@@ -31,7 +31,7 @@ class DbQueryController(private val trackService: TrackService) {
     @GetMapping("/ip_info")
     fun ipInfoGet(model: Model): String {
         log.info("ipInfoGet(): User has landed at the ip query page ('/ip_info')")
-        model.addAttribute("trackedUsers", trackService.queryDatabase())
+        model.addAttribute("trackedUsers", trackService.query())
         return "ip_info"
     }
 
@@ -46,7 +46,7 @@ class DbQueryController(private val trackService: TrackService) {
     @PostMapping("/ip_info")
     fun ipInfoPost(model: Model, @ModelAttribute("clientIpv4Address") clientIpv4Address: String): String {
         log.info("ipInfoPost(): User has queried the database for ip information")
-        model.addAttribute("trackedUsers", trackService.queryDatabase(clientIpv4Address))
+        model.addAttribute("trackedUsers", trackService.query(clientIpv4Address))
         return "ip_info"
     }
 }

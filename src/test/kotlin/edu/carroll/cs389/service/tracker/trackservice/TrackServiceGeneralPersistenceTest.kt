@@ -9,7 +9,7 @@ import org.springframework.test.util.AssertionErrors.assertTrue
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class TrackServiceGeneralDBPersistenceTest {
+class TrackServiceGeneralPersistenceTest {
 
     @Autowired
     private lateinit var trackService: TrackService
@@ -23,7 +23,7 @@ class TrackServiceGeneralDBPersistenceTest {
         assertTrue(
             "testDbIsEmptyWithoutInsert(): test db (newly instantiated and cleaned after every test" +
                     " should be empty without inserting data",
-            trackService.queryDatabase().isEmpty()
+            trackService.query().isEmpty()
         )
     }
 
@@ -43,10 +43,10 @@ class TrackServiceGeneralDBPersistenceTest {
 
         assertTrue(
             "persistenceOfTwoInsertsTest(): inserted two records, should be of size 2",
-            trackService.queryDatabase().size == 1
+            trackService.query().size == 1
         )
 
-        val user = trackService.queryDatabase()[0]
+        val user = trackService.query()[0]
 
         assertTrue(
             "persistenceOfTwoInsertsTest(): should query information from second insert first due to timestamp",
@@ -86,13 +86,13 @@ class TrackServiceGeneralDBPersistenceTest {
 
         assertTrue(
             "persistenceOfTwoInsertsTest(): inserted two records, should be of size 2",
-            trackService.queryDatabase().size == 2
+            trackService.query().size == 2
         )
 
 
         // assuming that queryDatabase works correctly (must assume something works)
         // we know the list is ordered by descending timestamp
-        val results = trackService.queryDatabase()
+        val results = trackService.query()
         val user1 = results[1]
         val user2 = results[0]
 
@@ -134,11 +134,11 @@ class TrackServiceGeneralDBPersistenceTest {
 
             assertTrue(
                 "varietyOfDataTest(): Db should contain ${i + 1} entries",
-                trackService.queryDatabase().size == i + 1
+                trackService.query().size == i + 1
             )
         }
 
-        val results = trackService.queryDatabase()
+        val results = trackService.query()
 
         for (i in 3 downTo 0) {
             val user = results[3-i]
