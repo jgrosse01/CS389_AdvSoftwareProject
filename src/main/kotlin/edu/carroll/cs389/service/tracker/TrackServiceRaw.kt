@@ -104,7 +104,7 @@ class TrackServiceRaw(private val trackerRepo: TrackerRepo): TrackService {
      * @return A list of all entries in the database matching the search term
      */
     override fun queryDatabase(ipv4: String?): List<TrackedUser> {
-        return if (ipv4 == "default" || ipv4 == null) {
+        return if (ipv4 == "default" || ipv4 == "" || ipv4 == null) {
             trackerRepo.findAll(Sort.by(Sort.Direction.DESC, "ClientConnectionAttemptTimestamp"))
         } else {
             trackerRepo.findByClientIpv4AddressOrderByClientConnectionAttemptTimestampDesc(ipv4)
