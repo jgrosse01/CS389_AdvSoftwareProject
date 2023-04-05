@@ -23,47 +23,47 @@ class QueryControllerTest {
     /*************************************/
 
     @Test
-    fun validGetMethodToDbQueryTest() {
+    fun validGetMethodToDatastoreQueryTest() {
         val uri: String = "/ip_info"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.get(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidGetMethodToDbQueryTest(): should be 200 when valid URI",
+            "invalidGetMethodToDatastoreQueryTest(): should be 200 when valid URI",
             result.response.status == 200
         )
     }
 
     @Test
-    fun invalidGetMethodToDbQueryTest() {
+    fun invalidGetMethodToDatastoreQueryTest() {
         val uri: String = "/this_uri_is_invalid"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.get(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidGetMethodToDbQueryTest(): should not be 200 when invalid URI",
+            "invalidGetMethodToDatastoreQueryTest(): should not be 200 when invalid URI",
             result.response.status != 200
         )
     }
 
     @Test
-    fun validPostMethodToDbQueryTest() {
+    fun validPostMethodToDatastoreQueryTest() {
         val uri: String = "/ip_info"
         val searchTerm: String = "127.0.0.1"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.post(uri, searchTerm)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidPostMethodToDbQueryTest(): should not be 200 when valid URI",
+            "invalidPostMethodToDatastoreQueryTest(): should not be 200 when valid URI",
             result.response.status != 200
         )
     }
 
     @Test
-    fun invalidPostMethodToDbQueryTest() {
+    fun invalidPostMethodToDatastoreQueryTest() {
         val uri: String = "/this_uri_is_invalid"
         val searchTerm: String = "127.0.0.1"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.post(uri, searchTerm)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidPostMethodToDbQueryTest(): should not be 200 when invalid URI",
+            "invalidPostMethodToDatastoreQueryTest(): should not be 200 when invalid URI",
             result.response.status != 200
         )
     }
@@ -73,45 +73,45 @@ class QueryControllerTest {
     /***********************************************/
 
     @Test
-    fun validPutMethodToDbQueryTest() {
+    fun validPutMethodToDatastoreQueryTest() {
         val uri: String = "/ip_info"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.put(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidPutMethodToDbQueryTest(): should not be 200 when valid URI",
+            "invalidPutMethodToDatastoreQueryTest(): should not be 200 when valid URI",
             result.response.status != 200
         )
     }
 
     @Test
-    fun invalidPutMethodToDbQueryTest() {
+    fun invalidPutMethodToDatastoreQueryTest() {
         val uri: String = "/this_uri_is_invalid"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.put(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidPutMethodToDbQueryTest(): should not be 200 when invalid URI",
+            "invalidPutMethodToDatastoreQueryTest(): should not be 200 when invalid URI",
             result.response.status != 200
         )
     }
 
     @Test
-    fun validDeleteMethodToDbQueryTest() {
+    fun validDeleteMethodToDatastoreQueryTest() {
         val uri: String = "/ip_info"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidDeleteMethodToDbQueryTest(): should not be 200 when valid URI",
+            "invalidDeleteMethodToDatastoreQueryTest(): should not be 200 when valid URI",
             result.response.status != 200
         )
     }
 
     @Test
-    fun invalidDeleteMethodToDbQueryTest() {
+    fun invalidDeleteMethodToDatastoreQueryTest() {
         val uri: String = "/this_uri_is_invalid"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidDeleteMethodToDbQueryTest(): should not be 200 when invalid URI",
+            "invalidDeleteMethodToDatastoreQueryTest(): should not be 200 when invalid URI",
             result.response.status != 200
         )
     }
@@ -121,23 +121,23 @@ class QueryControllerTest {
     /******************************************************/
 
     @Test
-    fun nullUriToDbQueryTest() {
+    fun nullUriToDatastoreQueryTest() {
         val uri: String = ""
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.get(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidDeleteMethodToDbQueryTest(): should not be 200 when invalid URI",
+            "invalidDeleteMethodToDatastoreQueryTest(): should not be 200 when invalid URI",
             result.response.status != 200
         )
     }
 
     @Test
-    fun sqlStatementAsParameterToDbQueryTest() {
+    fun sqlStatementAsParameterToDatastoreQueryTest() {
         val uri: String = "/?';select * from tracked_users;'"
 
         val result: MvcResult = dbMvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn()
         AssertionErrors.assertTrue(
-            "invalidDeleteMethodToDbQueryTest(): should not be 200 when invalid URI",
+            "invalidDeleteMethodToDatastoreQueryTest(): should not be 200 when invalid URI",
             result.response.status != 200
         )
     }
